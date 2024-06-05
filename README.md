@@ -33,6 +33,15 @@
 
 ![screenshot](screenshot.png)
 
+##NOTES on customizations
+The following files have been amended:
+*
+* Fixing Hours Available listing: In ./application/controllers/Appointments.php ajax_get_unavailable_dates and ajax_get_available_hours
+* Round Robin - ./assets/js/frontend_book_api.js
+* Exclude Step - ./application/views/appointments/book.php AND ./assets/css/frontend.css
+* Change available hour listing periods - ./application/libraries/Appointment.php
+* ./application/libraries/Timezones.php to insert shifts as timezones that can be selected for providers
+
 ## About
 
 **Easy!Appointments** is a highly customizable web application that allows customers to book appointments with you 

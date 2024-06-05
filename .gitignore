@@ -28,4 +28,5 @@
 !/storage/uploads/index.html
 /vendor/
 /metafile
+config.php
 .DS_Store

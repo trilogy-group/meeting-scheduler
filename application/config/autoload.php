@@ -53,8 +53,7 @@ $autoload['packages'] = [];
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = ['database', 'session'];
-
+$autoload['libraries'] = ['database', 'session' ];
 
 /*
 | -------------------------------------------------------------------
@@ -65,7 +64,7 @@ $autoload['libraries'] = ['database', 'session'];
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = ['custom_exceptions', 'url', 'file', 'language', 'asset', 'config', 'render', 'rate_limit', 'security'];
+$autoload['helper'] = ['custom_datetimezone', 'custom_exceptions', 'url', 'file', 'language', 'asset', 'config', 'render', 'rate_limit', 'security'];
 
 
 /*

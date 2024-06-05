@@ -411,7 +411,7 @@ class Appointments extends EA_Controller {
             $provider_id = $this->input->post('provider_id');
             $service_id = $this->input->post('service_id');
             $selected_date = $this->input->post('selected_date');
-
+            log_message('debug', 'The provider is ' . $provider_id);
             // Do not continue if there was no provider selected (more likely there is no provider in the system).
             if (empty($provider_id))
             {
@@ -428,30 +428,30 @@ class Appointments extends EA_Controller {
 
             // If the user has selected the "any-provider" option then we will need to search for an available provider
             // that will provide the requested service.
+            $provider_id = ANY_PROVIDER;
+            log_message('debug', 'The provider is ' . $provider_id);
             if ($provider_id === ANY_PROVIDER)
             {
-                $provider_id = $this->search_any_provider($service_id, $selected_date);
 
-                if ($provider_id === NULL)
+                $pooled_hours = $this->search_any_provider_mod($service_id, $selected_date);
+
+                if (empty($pooled_hours))
                 {
                     $this->output
                         ->set_content_type('application/json')
                         ->set_output(json_encode([]));
-
                     return;
                 }
+
             }
 
-            $service = $this->services_model->get_row($service_id);
-
-            $provider = $this->providers_model->get_row($provider_id);
-
-            $response = $this->availability->get_available_hours($selected_date, $service, $provider, $exclude_appointment_id);
+//            $service = $this->services_model->get_row($service_id);
+//            $provider = $this->providers_model->get_row($provider_id);
+//            $response = $this->availability->get_available_hours($selected_date, $service, $provider, $exclude_appointment_id);
         }
         catch (Exception $exception)
         {
             $this->output->set_status_header(500);
-
             $response = [
                 'message' => $exception->getMessage(),
                 'trace' => config('debug') ? $exception->getTrace() : []
@@ -461,6 +461,7 @@ class Appointments extends EA_Controller {
         $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
+        log_message('debug', 'Response is: ' . json_encode($response));
     }
 
     /**
@@ -476,6 +477,36 @@ class Appointments extends EA_Controller {
      *
      * @throws Exception
      */
+
+
+    // debug : Modified function that will fetch all the providers and feed them so that all available hours are obtained. 
+    
+    protected function search_any_provider_mod($service_id, $date)
+    {
+        $available_providers = $this->providers_model->get_available_providers();
+        log_message('debug', json_encode($available_providers, JSON_PRETTY_PRINT));
+        $service = $this->services_model->get_row($service_id);
+
+        $pooled_available_hours = [];
+
+        $provider_id = NULL;
+
+        foreach ($available_providers as $provider){
+            foreach ($provider['services'] as $provider_service_id) {
+                if ($provider_service_id == $service_id) {
+                    $available_hours = $this->availability->get_available_hours($date, $service, $provider);
+                    foreach ($available_hours as $hour) {
+                        if(!isset($pooled_available_hours[$hour])){
+                            $pooled_available_hour[$hour] = [];
+                        }
+                        $pooled_available_hour[$hour][] = $provider['id'];
+                    }
+                }
+            }
+        }         
+            return $pooled_available_hours;
+    }
+    
     protected function search_any_provider($service_id, $date, $hour = NULL)
     {
         $available_providers = $this->providers_model->get_available_providers();
@@ -485,6 +516,8 @@ class Appointments extends EA_Controller {
         $provider_id = NULL;
 
         $max_hours_count = 0;
+
+        $providers_with_hours = [];
 
         foreach ($available_providers as $provider)
         {

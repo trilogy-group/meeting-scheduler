@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/bootstrap/css/bootstrap.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/jquery-ui/jquery-ui.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/cookieconsent/cookieconsent.min.css') ?>">
-    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/frontend.css') ?>">
+    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/frontend.css') ?>"> <!-- CUSTOM frontend.css has been changed to account for Step reorganization -->
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/general.css') ?>">
 
     <link rel="icon" type="image/x-icon" href="<?= asset_url('assets/img/favicon.ico') ?>">
@@ -32,22 +32,25 @@
                 <span id="company-name"><?= $company_name ?></span>
 
                 <div id="steps">
+                <!-- CUSTOM CODE Remove the step-1 div -->
+                    <!--
                     <div id="step-1" class="book-step active-step"
                          data-tippy-content="<?= lang('service_and_provider') ?>">
                         <strong>1</strong>
                     </div>
+                     -->
 
-                    <div id="step-2" class="book-step" data-toggle="tooltip"
+                    <div id="step-2" class="book-step active-step" 
                          data-tippy-content="<?= lang('appointment_date_and_time') ?>">
-                        <strong>2</strong>
+                        <strong>1</strong>
                     </div>
                     <div id="step-3" class="book-step" data-toggle="tooltip"
                          data-tippy-content="<?= lang('customer_information') ?>">
-                        <strong>3</strong>
+                        <strong>2</strong>
                     </div>
                     <div id="step-4" class="book-step" data-toggle="tooltip"
                          data-tippy-content="<?= lang('appointment_confirmation') ?>">
-                        <strong>4</strong>
+                        <strong>3</strong>
                     </div>
                 </div>
             </div>
@@ -94,8 +97,8 @@
 
 
             <!-- SELECT SERVICE AND PROVIDER -->
-
-            <div id="wizard-frame-1" class="wizard-frame">
+                <!-- CUSTOM CODE Hide the step-1 div -->
+            <div id="wizard-frame-1" class="wizard-frame" style="display: none;">
                 <div class="frame-container">
                     <h2 class="frame-title"><?= lang('service_and_provider') ?></h2>
 
@@ -201,7 +204,7 @@
 
             <!-- SELECT APPOINTMENT DATE -->
 
-            <div id="wizard-frame-2" class="wizard-frame" style="display:none;">
+            <div id="wizard-frame-2" class="wizard-frame"> <!--style="display:none;"--> <!--CUSTOM -->
                 <div class="frame-container">
 
                     <h2 class="frame-title"><?= lang('appointment_date_and_time') ?></h2>
@@ -394,7 +397,7 @@
 
             <!-- FRAME FOOTER -->
 
-            <div id="frame-footer">
+            <div id="frame-footer" style="display:none;"> <!-- CUSTOM Removed Footer -->
                 <small>
                     <span class="footer-powered-by">
                         Powered By

@@ -30,7 +30,11 @@ class Timezones {
      */
     protected $timezones = [
         'UTC' => [
-            'UTC' => 'UTC'
+            'UTC' => 'UTC',
+            'S1' => 'S1',
+            'S2' => 'S2',
+            'S3' => 'S3',
+            'S4' => 'S4',
         ],
         'America' => [
             'America/Adak' => 'Adak (-10:00)',

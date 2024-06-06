@@ -212,7 +212,6 @@ class Google_sync {
         $event->setLocation(isset($appointment['location']) ? $appointment['location'] : $settings['company_name']);
 
         $timezone = create_custom_datetimezone($provider['timezone']);
-
         $start = new Google_Service_Calendar_EventDateTime();
         $start->setDateTime((new DateTime($appointment['start_datetime'], $timezone))->format(DateTime::RFC3339));
         $event->setStart($start);

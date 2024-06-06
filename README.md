@@ -34,6 +34,7 @@
 ![screenshot](screenshot.png)
 
 ##NOTES on customizations
+
 Changes have been made to the following:
 * ./application/libraries/Availability.php - Applied a function to round to nearest half hour when pulling periods. Round up or down depending on end or start of shift/appointment/break. Used in get_available_hours
 * ./application/controllers/Appointments.php ajax_get_unavailable_dates and ajax_get_available_hours (sub function "search_any_provider_mod") - now returns yesterday, today, tomorrow for all providers instead of a single provider.

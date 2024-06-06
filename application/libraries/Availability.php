@@ -120,7 +120,6 @@ class Availability {
 
         $periods = [];
 
-
         // CUSTOM - Defining a function so I can tend periods to the half hour mark no matter what.
         $roundToHalfHour = function (DateTime $time, $downflag): DateTime {
             $hour = (int) $time->format('H');
@@ -157,7 +156,6 @@ class Availability {
                 $break_end_record = new DateTime($break['end']);
                 $break_start = $roundToHalfHour($break_start_record, TRUE);
                 $break_end = $roundToHalfHour($break_start_record, FALSE);
-
 
                 if ($break_start < $day_start)
                 {

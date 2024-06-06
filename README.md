@@ -33,11 +33,11 @@
 
 ![screenshot](screenshot.png)
 
-##NOTES on customizations
+## NOTES on customizations
 
 Changes have been made to the following:
 * ./application/libraries/Availability.php - Applied a function to round to nearest half hour when pulling periods. Round up or down depending on end or start of shift/appointment/break. Used in get_available_hours
-* ./application/controllers/Appointments.php ajax_get_unavailable_dates and ajax_get_available_hours (sub function "search_any_provider_mod") - now returns yesterday, today, tomorrow for all providers instead of a single provider.
+* ./application/controllers/Appointments.php ajax_get_unavailable_dates and ajax_get_available_hours (sub function "search_any_provider_mod") - now returns yesterday, today, tomorrow for all providers instead of only that day for a single provider.
 * Round Robin logic inserted in - ./assets/js/frontend_book_api.js (Data from ajax_get_available_hours POST endpoint is parsed, and round robin logic applied here. 
 * Exclude Step #1 on booking page so "any-provider" always selected - ./application/views/appointments/book.php AND ./assets/css/frontend.css
 * ./application/libraries/Timezones.php to insert shifts as timezones that can be selected for providers

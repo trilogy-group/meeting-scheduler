@@ -143,7 +143,6 @@ class Availability {
                 'start' => $date_working_plan['start'],
                 'end' => $date_working_plan['end']
             ];
-            log_message('debug', json_encode($periods,JSON_PRETTY_PRINT));
             $day_start_record = new DateTime($date_working_plan['start']);
             $day_end_record = new DateTime($date_working_plan['end']);
             $day_start = $roundToHalfHour($day_start_record, FALSE);

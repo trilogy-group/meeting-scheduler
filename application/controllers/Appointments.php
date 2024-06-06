@@ -478,27 +478,45 @@ class Appointments extends EA_Controller {
     
     protected function search_any_provider_mod($service_id, $date)
     {
+        //Getting day-before and day-after
+        $today_obj = new DateTime($date);
+        $yesterday_obj = (clone $today_obj)->modify('-1 day');
+        $tomorrow_obj = (clone $today_obj)->modify('+1 day'); 
+        $date_map = [ 
+        'yesterday' => $yesterday_obj->format('Y-m-d'),
+        'today' => $today_obj->format('Y-m-d'),
+        'tomorrow' => $tomorrow_obj->format('Y-m-d'),
+        ];
+
         $available_providers = $this->providers_model->get_available_providers();
         $service = $this->services_model->get_row($service_id);
 
-        $pooled_available_hours = [];
+        $pooled_available_hours = [
+            'yesterday' => [],
+            'today' => [],
+            'tomorrow' => []
+        ];
 
         $provider_id = NULL;
 
         foreach ($available_providers as $provider){
             foreach ($provider['services'] as $provider_service_id) {
                 if ($provider_service_id == $service_id) {
-                    $available_hours = $this->availability->get_available_hours($date, $service, $provider);
-                    log_message('debug', json_encode($available_hours, JSON_PRETTY_PRINT));
-                    foreach ($available_hours as $hour) {
-                        if(!isset($pooled_available_hours[$hour])){
-                            $pooled_available_hours[$hour] = [];
+                    foreach (array_keys($pooled_available_hours) as $day) {
+                        $current_date = $date_map[$day];
+                        $available_hours = $this->availability->get_available_hours($current_date, $service, $provider);
+                        log_message('debug', json_encode($available_hours, JSON_PRETTY_PRINT));
+                        foreach ($available_hours as $hour) {
+                            if(!isset($pooled_available_hours[$day][$hour])){
+                                $pooled_available_hours[$day][$hour] = [];
+                            }
+                            $pooled_available_hours[$day][$hour][] = $provider['id'];
                         }
-                        $pooled_available_hours[$hour][] = $provider['id'];
                     }
                 }
             }
         }         
+        log_message('debug', json_encode($pooled_available_hours, JSON_PRETTY_PRINT));
             return $pooled_available_hours;
     }
     

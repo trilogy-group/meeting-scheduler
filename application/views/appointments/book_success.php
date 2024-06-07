@@ -22,12 +22,16 @@
         <div id="success-frame" class="col-12 border my-auto frame-container">
             <div>
                 <img id="success-icon" class="mt-0 mb-2" src="<?= base_url('assets/img/success.png') ?>"/>
+            </br>
             </div>
 
             <div>
                 <h3><?= lang('appointment_registered') ?></h3>
+                <p> </p>
+                </br>
+                <p> </p>
 
-                <p>
+                <!-- p>
                     <?= lang('appointment_details_was_sent_to_you') ?>
                 </p>
 
@@ -37,12 +41,12 @@
                     </strong>
                 </p>
 
-                <a href="<?= site_url() ?>" class="btn btn-dark btn-large">
+                <a href="<?= site_url() ?>" class="btn btn-light btn-large">
                     <i class="fas fa-calendar-alt"></i>
                     <?= lang('go_to_booking_page') ?>
-                </a>
+                </a-->
 
-                <a href="<?= $add_to_google_url ?>" id="add-to-google-calendar" class="btn btn-primary btn-light" target="_blank">
+                <a href="<?= $add_to_google_url ?>" id="add-to-google-calendar" class="btn btn-primary btn-dark" target="_blank">
                     <i class="fas fa-plus"></i>
                     <?= lang('add_to_google_calendar') ?>
                 </a>

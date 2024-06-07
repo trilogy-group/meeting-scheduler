@@ -46,6 +46,11 @@ Changes have been made to the following:
 * ./application/views/backend/services.php - The following options are pre-selected and readonly when creating a service because the code amendments only cater to this set of options: 
 - Availability Types = Fixed
 - Attendants number = 1
+* Modified ./assets/js/backend_services_helper.js to add the logic for generating links that will die after 7 days. 
+- this is simply at time of creation a time epoch string base64 encoded. 
+- It is reverse encoded when loading the booking page to optionally deny bookings.
+* Modified controller ./application/controllers/Appointments.php - to throw an error instead of loading booking view if b64 time epoch string is not included.
+
 
 ## About
 

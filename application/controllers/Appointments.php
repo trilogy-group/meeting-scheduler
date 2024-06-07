@@ -40,6 +40,8 @@ class Appointments extends EA_Controller {
         $this->load->driver('cache', ['adapter' => 'file']);
     }
 
+
+
     /**
      * Default callback method of the application.
      *
@@ -58,6 +60,7 @@ class Appointments extends EA_Controller {
                 return;
             }
 
+            $authString = $this->input->get('auth');
             $available_services = $this->services_model->get_available_services();
             $available_providers = $this->providers_model->get_available_providers();
             $company_name = $this->settings_model->get_setting('company_name');
@@ -202,7 +205,20 @@ class Appointments extends EA_Controller {
                 $customer = [];
             }
 
-            // Load the book appointment view.
+            if (!$authString) {
+                show_error('Sorry this Link has  expired. Please contact support again.', 401);
+            }
+            $epochTimestamp = base64_decode($authString);
+            if ($epochTimestamp === false) {
+                show_error('Sorry this Link has  expired. Please contact support again.', 401);
+            }
+            $currentTimestamp = time();
+            $sevenDaysInSeconds = 7 * 24 * 60 * 60;
+            if (($currentTimestamp - $epochTimestamp) > $sevenDaysInSeconds) {
+                show_error('Sorry this Link has  expired. Please contact support again.', 401);
+            }
+                // Continue Loading the book appointment view.
+
             $variables = [
                 'available_services' => $available_services,
                 'available_providers' => $available_providers,
@@ -482,41 +498,37 @@ class Appointments extends EA_Controller {
         $today_obj = new DateTime($date);
         $yesterday_obj = (clone $today_obj)->modify('-1 day');
         $tomorrow_obj = (clone $today_obj)->modify('+1 day'); 
-        $date_map = [ 
-        'yesterday' => $yesterday_obj->format('Y-m-d'),
-        'today' => $today_obj->format('Y-m-d'),
-        'tomorrow' => $tomorrow_obj->format('Y-m-d'),
-        ];
+
+        $yesterday = $yesterday_obj->format('Y-m-d');
+        $today = $today_obj->format('Y-m-d');
+        $tomorrow = $tomorrow_obj->format('Y-m-d');
 
         $available_providers = $this->providers_model->get_available_providers();
         $service = $this->services_model->get_row($service_id);
+        
 
-        $pooled_available_hours = [
-            'yesterday' => [],
-            'today' => [],
-            'tomorrow' => []
-        ];
+        $pooled_available_hours = [];
 
-        $provider_id = NULL;
+        foreach ($available_providers as $provider) {
 
-        foreach ($available_providers as $provider){
+            $provider_id = $provider['id'];
+            $pooled_available_hours[$provider_id] = [
+                $yesterday => [],
+                $today => [],
+                $tomorrow => []
+            ];
+
             foreach ($provider['services'] as $provider_service_id) {
                 if ($provider_service_id == $service_id) {
-                    foreach (array_keys($pooled_available_hours) as $day) {
-                        $current_date = $date_map[$day];
+                    foreach (array_keys($pooled_available_hours[$provider_id]) as $current_date) {
                         $available_hours = $this->availability->get_available_hours($current_date, $service, $provider);
-                        log_message('debug', json_encode($available_hours, JSON_PRETTY_PRINT));
-                        foreach ($available_hours as $hour) {
-                            if(!isset($pooled_available_hours[$day][$hour])){
-                                $pooled_available_hours[$day][$hour] = [];
-                            }
-                            $pooled_available_hours[$day][$hour][] = $provider['id'];
-                        }
+                        $pooled_available_hours[$provider_id][$current_date] = $available_hours;
+                      //  log_message('debug', json_encode($available_hours, JSON_PRETTY_PRINT));
                     }
                 }
             }
-        }         
-        log_message('debug', json_encode($pooled_available_hours, JSON_PRETTY_PRINT));
+        }
+//        log_message('debug', json_encode($pooled_available_hours, JSON_PRETTY_PRINT));
             return $pooled_available_hours;
     }
     

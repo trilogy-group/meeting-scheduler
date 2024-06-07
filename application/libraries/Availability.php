@@ -124,17 +124,35 @@ class Availability {
         $roundToHalfHour = function (DateTime $time, $downflag): DateTime {
             $hour = (int) $time->format('H');
             $minutes = (int) $time->format('i');
-
             // Round down to the nearest half-hour
             if ($downflag) {
                 if ($minutes < 30) {$minutes = 0;} else {$minutes = 30;}
             } else {
-                if ($minutes < 30) {$minutes = 30;} else {$minutes = 0; $hour += 1;}
+            // Round up to the nearest half-hour
+                if ($minutes < 30 && $minutes > 0) {$minutes = 30;} 
+                else if ($minutes === 0) {}
+                else {$minutes = 0; $hour += 1;}
             }
             $roundedTime = (clone $time)->setTime($hour, $minutes);
             return $roundedTime;
         };
 
+        $roundToHalfHourX = function (DateTime $time, $downflag): DateTime {
+            $hour = (int) $time->format('H');
+            $minutes = (int) $time->format('i');
+            // Round down to the nearest half-hour
+            if ($downflag) {
+                if ($minutes < 30) {$minutes = 0;} else {$minutes = 30;}
+            } else {
+            // Round up to the nearest half-hour
+                if ($minutes < 30 && $minutes > 0) {$minutes = 30;} 
+                else if ($minutes === 0) {}
+                else {$minutes = 0; $hour += 1;}
+            }
+
+            $roundedTime = (clone $time)->setTime($hour, $minutes);
+            return $roundedTime;
+        };
 
 
         if (isset($date_working_plan['breaks']))
@@ -147,15 +165,15 @@ class Availability {
             $day_end_record = new DateTime($date_working_plan['end']);
             $day_start = $roundToHalfHour($day_start_record, FALSE);
             $day_end = $roundToHalfHour($day_end_record, TRUE);
-            
+             
             // Split the working plan to available time periods that do not contain the breaks in them.
             foreach ($date_working_plan['breaks'] as $index => $break)
             {
                 $break_start_record = new DateTime($break['start']);
                 $break_end_record = new DateTime($break['end']);
                 $break_start = $roundToHalfHour($break_start_record, TRUE);
-                $break_end = $roundToHalfHour($break_start_record, FALSE);
-
+                $break_end = $roundToHalfHourX($break_end_record, FALSE);
+                
                 if ($break_start < $day_start)
                 {
                     $break_start = $day_start;
@@ -196,7 +214,7 @@ class Availability {
                             'start' => $break_end->format('H:i'),
                             'end' => $period_end->format('H:i')
                         ];
-
+                    
                         $remove_current_period = TRUE;
                     }
 
@@ -295,7 +313,6 @@ class Availability {
                 }
             }
         }
-
         return array_values($periods);
     }
 
@@ -340,7 +357,6 @@ class Availability {
                 $diff = $current_hour->diff($end_hour);
             }
         }
-
         return $available_hours;
     }
 
@@ -592,7 +608,23 @@ class Availability {
      */
     protected function consider_book_advance_timeout($selected_date, $available_hours, $provider)
     {
-        $provider_timezone = create_custom_datetimezone($provider['timezone']);
+
+        $timezones = [
+            'S1' => 'Asia/Jakarta',  // Jakarta (+7:00)
+            'S2' => 'Africa/Algiers', // Algiers (+1:00)
+            'S3' => 'America/Jamaica', // Jamaica (-5:00)
+            'S4' => 'Pacific/Niue', // Niue (−11:00)
+        ];
+        
+        $custom_timezone =  $provider['timezone'];
+        if (array_key_exists($custom_timezone, $timezones)) {
+            $final_timezone = $timezones[$custom_timezone];
+        } else {
+            $final_timezone = $custom_timezone;
+        } 
+
+        $provider_timezone = create_custom_datetimezone($final_timezone);
+
 
         $book_advance_timeout = $this->CI->settings_model->get_setting('book_advance_timeout');
 
@@ -600,7 +632,10 @@ class Availability {
 
         foreach ($available_hours as $index => $value)
         {
+            //log_message('debug', $selected_date . ' ' . $value); 
             $available_hour = new DateTime($selected_date . ' ' . $value, $provider_timezone);
+            //log_message('debug', print_r($available_hour, true));  
+            //log_message('debug', 'compared to ' . print_r($threshold->format('Y-m-d H:i:s'), true));  
 
             if ($available_hour->getTimestamp() <= $threshold->getTimestamp())
             {

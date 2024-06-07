@@ -29,4 +29,5 @@
 /vendor/
 /metafile
 config.php
+meeting-scheduler-key.pem
 .DS_Store

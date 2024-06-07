@@ -123,6 +123,11 @@ body {
     margin: auto;
 }
 
+.custom-selectable {
+    pointer-events: auto !important; /* CUSTOM CODE */
+    cursor: pointer !important;
+}
+
 #book-appointment-wizard .wizard-frame #select-time {
     max-width: 288px;
     margin: auto;

@@ -262,7 +262,8 @@
                                     <?= lang('last_name') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="last-name" class="required form-control" maxlength="120"/>
+<!-- CUSTOM last-name not required and removed via script Document.selectBY -->
+                                <input type="text" id="last-name" class="form-control" maxlength="120"/>
                             </div>
                             <div class="form-group">
                                 <label for="email" class="control-label">
@@ -283,10 +284,12 @@
 
                         <div class="col-12 col-md-6">
                             <div class="form-group">
+<!-- CUSTOM Address field used to store ticket number and have been made "required" --> 
                                 <label for="address" class="control-label">
                                     <?= lang('address') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="address" class="form-control" maxlength="120"/>
+                                <input type="text" id="address" class="required form-control" maxlength="120"/>
                             </div>
                             <div class="form-group">
                                 <label for="city" class="control-label">
@@ -385,7 +388,7 @@
                         <?= lang('back') ?>
                     </button>
                     <form id="book-appointment-form" style="display:inline-block" method="post">
-                        <button id="book-appointment-submit" type="button" class="btn btn-success">
+                        <button id="book-appointment-submit" type="button" class="btn btn-dark">
                             <i class="fas fa-check-square mr-2"></i>
                             <?= ! $manage_mode ? lang('confirm') : lang('update') ?>
                         </button>
@@ -454,6 +457,18 @@
 
     var EALang = <?= json_encode($this->lang->language) ?>;
     var availableLanguages = <?= json_encode(config('available_languages')) ?>;
+    document.querySelector('label[for="zip-code"]').style.display = "none";
+    document.getElementById("zip-code").style.display = "none";
+    document.querySelector('label[for="city"]').style.display = "none";
+    document.getElementById("city").style.display = "none";
+    document.querySelector('label[for="last-name"]').style.display = "none";
+    document.getElementById("last-name").style.display = "none";
+    var back2 = document.getElementById("button-back-2");
+    back2.style.visibility = "hidden";
+    back2.style.width = "0px";
+    back2.style.height = "0px";
+    back2.style.margin = "0";
+    back2.style.padding = "0";
 </script>
 
 <script src="<?= asset_url('assets/js/general_functions.js') ?>"></script>

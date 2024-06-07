@@ -56,8 +56,6 @@ window.FrontendBookApi = window.FrontendBookApi || {};
 
         // Make ajax post request and get the available hours.
         var url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_get_available_hours';
-        var provider_check = $('#select-provider').val() // debug
-        console.log(provider_check);
         var data = {
             csrfToken: GlobalVariables.csrfToken,
             service_id: $('#select-service').val(),
@@ -68,13 +66,12 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             appointment_id: appointmentId
         };
 
-        let collectedProviders = []; //Providers of that service will be collected here.
         $.post(url, data)
             .done(function (response) {
-                console.log(JSON.stringify(response,null,2)); // debug
-                // The response contains the available hours for the selected provider and
+                let collectedProviders = []; //Providers of that service will be collected here.
+                // The response contains the available hours for all providers and
                 // service. Fill the available hours div with response data.
-                if (response.length > 0) {
+                if (Object.keys(response).length > 0) {
                     var providerId = $('#select-provider').val(); 
                     let tempProviderCollection = [];
                     if (providerId === 'any-provider') {
@@ -87,7 +84,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                     collectedProviders = tempProviderCollection;
                 }
                 
-                console.log("Printing available providers", JSON.stringify(collectedProviders, null,2));
+                // console.log("Printing available providers", JSON.stringify(collectedProviders, null,2));
                         // [
                         //  {
                         //    "id": "4",
@@ -97,7 +94,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                         //      "2",
                         //      "3"
                         //    ],
-                        //    "timezone": "Africa/Algiers"
+                        //    "timezone": "S2"
                         //  },
                         //  {
                         //    "id": "2",
@@ -107,7 +104,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                         //      "2",
                         //      "3"
                         //    ],
-                        //    "timezone": "America/New_York"
+                        //    "timezone": "S3"
                         //  }
                         //]
                                 
@@ -131,75 +128,129 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                     //if (!provider) {
                     //    throw new Error('Could not find provider.');
                     //}
-
-            var providerId =collectedProviders[0].id; 
-            var provider = collectedProviders[0].id; 
-            console.log("Provider Id is:", providerId);
-            var providerTimezone = provider.timezone;
-            var selectedTimezone = $('#select-timezone').val();
-            var timeFormat = GlobalVariables.timeFormat === 'regular' ? 'h:mm a' : 'HH:mm';
                 
-                //CUSTOM: Mapping that will make 08:00AM to 4:00PM working hours set align with UTC shift on same day (in UTC time) 
-                //To test: https://savvytime.com/converter/utc and move timer to UTC shift start time, then add the 'city' corresponding to offset, and observe it is 08:00am.
-                // S1 : 0100 - 1000 hrs UTC
-                // S2 : 0700 - 1600 hrs UTC
-                // S3 : 1300 - 2200 hrs UTC
-                // S4 : 1900 - 0400 hrs(next day) UTC
+                //To collect REAL HOUR (in provider timezone) mapped to the HOUR/SLOT in the customer's timezone. Used to append value to #available-hours for booking appointment
+                const providerSlotsMap = {}; 
+                let hourSet = new Set();
+                let hourList = [];
+                for (const provider of collectedProviders) {
+                    providerId = provider.id; 
+                    var providerName = provider.first_name + ' ' + provider.last_name;
+                    var providerTimezone = provider.timezone;
+                    var selectedTimezone = $('#select-timezone').val();
+                    var timeFormat = GlobalVariables.timeFormat === 'regular' ? 'h:mm a' : 'HH:mm';
+                    providerSlotsMap[providerId] = {}; //initialize empty to carry the realHours data
 
-            const tzMapping = {
-                'S1':'+07:00', //City: Jakarta, Indonesia - UTC+07:00
-                'S2':'+01:00', //City: Algiers, Algeria - UTC+01:00
-                'S3':'-05:00', //City: Kingston, Jamaica - UTC-05:00
-                'S4':'-11:00', //City: Alofi, Niue - UTC-11:00
-            };
+                    
+                    //CUSTOM: Mapping that will make 08:00AM to 5:00PM working hours set align with UTC shift on same day (in UTC time) 
+                    //To test: https://savvytime.com/converter/utc and move timer to UTC shift start time, then add the 'city' corresponding to offset, and observe it is 08:00am.
+                    // S1 : 0100 - 1000 hrs UTC
+                    // S2 : 0700 - 1600 hrs UTC
+                    // S3 : 1300 - 2200 hrs UTC
+                    // S4 : 1900 - 0400 hrs(next day) UTC
 
-            response.forEach(function (availableHour) {
-                if (Object.keys(tzMapping).includes(providerTimezone)){
-                    var availableHourMoment = moment
-                        .tz(selectedDate + ' ' + availableHour + ':00', tzMapping[providerTimezone])
-                        .tz(selectedTimezone);
+                    const tzMapping = {
+                        'S1':'+07:00', //City: Jakarta, Indonesia - UTC+07:00
+                        'S2':'+01:00', //City: Algiers, Algeria - UTC+01:00
+                        'S3':'-05:00', //City: Kingston, Jamaica - UTC-05:00
+                        'S4':'-11:00', //City: Alofi, Niue - UTC-11:00
+                    };
+                    // Iterate over the hours which are of format 2024-05-14: [10:00,10:30...] 
+                    // Extract and conver the hours to timezone of customer viewing this booking page
+                    Object.entries(response[providerId]).forEach(([thisDate, hours]) => {
+                        //console.log("Using the provider :", providerId);
+                        //console.log(JSON.stringify(hours, null, 2));
+                        hours.forEach(function (availableHour) {
+                            const realHour = thisDate + ' ' + availableHour + ':00';
+                            let availableHourMoment;
+                            if (Object.keys(tzMapping).includes(providerTimezone)){
+                                availableHourMoment = moment
+                                    .tz(thisDate + ' ' + availableHour + ':00' + tzMapping[providerTimezone],selectedTimezone);
+                                //console.log(availableHourMoment.format('YYYY-MM-DD'));
+                            } else {
+                                availableHourMoment = moment
+                                    .tz(thisDate + ' ' + availableHour + ':00', providerTimezone)
+                                    .tz(selectedTimezone);
+                            }
+                            let tzConvertedDate = availableHourMoment.format('YYYY-MM-DD');
+                            if (tzConvertedDate !== selectedDate) {
+                                return; // The available hour belongs to another date in customer's timezone and should not be rendered.  
+                            }
+                            const hourMoment = availableHourMoment.format(timeFormat);
+                            //console.log(hourMoment);
+                            providerSlotsMap[providerId][hourMoment] = realHour; //Loading trace to realHour vs timezoneConverted map.
+                            hourSet.add(hourMoment);
+                        });
+                    });
+                     
+                            //From the set create a list of sorted hours
+                            hourList = Array.from(hourSet).sort((a,b) => moment(a, timeFormat).valueOf() - moment(b,timeFormat).valueOf());
+                }
+                //console.log(hourList);
+                function getRandomItem(listing) {
+                    const randomIndex = Math.floor(Math.random() * listing.length);
+                    return listing[randomIndex];
+                }
+                for (const hour of hourList) {
+                    let theProvider;
+                    const maxAttempts = 2000; // Define a maximum number of attempts to prevent infinite loop
+                    let attempts = 0;
+                    if (collectedProviders.length === 0) {
+                        console.log('No providers available');
+                    } else {
+                        while (!theProvider && attempts < maxAttempts) {
+                            const randomProvider = getRandomItem(collectedProviders);
+                            theProvider = randomProvider.id;
+                            if (providerSlotsMap[theProvider][hour] !== undefined) {
+                                const realHour = providerSlotsMap[theProvider][hour];  
+                                const theProviderObject = collectedProviders.find(provider => provider.id === theProvider); 
+                                const theProviderName = theProviderObject.first_name + ' ' + theProviderObject.last_name;
+                                console.log(`Printing appended provider ${theProvider} at ${realHour.split(' ')[1].substring(0, 5)}`);
+                                $('#available-hours').append(
+                                    $('<button/>', {
+                                        'class': 'btn btn-outline-secondary btn-block shadow-none available-hour',
+                                        'data': {
+                                            'value': realHour,
+                                            'provider': theProvider
+                                        }, 
+                                        'text': hour 
+                                    })
+                                    .attr('data-agentTime', realHour)
+                                    .attr('data-id', theProvider)
+                                    .attr('data-name', theProviderName)
+                                )
+                                break;
+                                } else {
+                                    theProvider = null;
+                                    attempts += 1;
+                                    continue;
+                                }
+                            }
+                        }
+                }
+                
+                // Set the appointment's start time as the default selection.
+                if (FrontendBook.manageMode) {
+                    $('.available-hour')
+                        .removeClass('selected-hour')
+                        .filter(function () {
+                            return $(this).text() === Date.parseExact(
+                                GlobalVariables.appointmentData.start_datetime,
+                                'yyyy-MM-dd HH:mm:ss').toString(timeFormat);
+                        })
+                        .addClass('selected-hour');
                 } else {
-                    var availableHourMoment = moment
-                        .tz(selectedDate + ' ' + availableHour + ':00', providerTimezone)
-                        .tz(selectedTimezone);
+                    // Set the first available hour as the default selection.
+                    $('.available-hour:eq(0)').addClass('selected-hour');
                 }
-
-                if (availableHourMoment.format('YYYY-MM-DD') !== selectedDate) {
-                    return; // Due to the selected timezone the available hour belongs to another date.  
+                FrontendBook.updateConfirmFrame();
+                if (!$('.available-hour').length) {
+                    $('#available-hours').text(EALang.no_available_hours);
                 }
-
-                $('#available-hours').append(
-                    $('<button/>', {
-                        'class': 'btn btn-outline-secondary btn-block shadow-none available-hour',
-                        'data': {
-                            'value': availableHour
-                        },
-                        'text': availableHourMoment.format(timeFormat)
-                    })
-                );
             });
 
-            if (FrontendBook.manageMode) {
-                // Set the appointment's start time as the default selection.
-                $('.available-hour')
-                    .removeClass('selected-hour')
-                    .filter(function () {
-                        return $(this).text() === Date.parseExact(
-                            GlobalVariables.appointmentData.start_datetime,
-                            'yyyy-MM-dd HH:mm:ss').toString(timeFormat);
-                    })
-                    .addClass('selected-hour');
-            } else {
-                // Set the first available hour as the default selection.
-                $('.available-hour:eq(0)').addClass('selected-hour');
-            }
-
-            FrontendBook.updateConfirmFrame();
-
-            if (!$('.available-hour').length) {
-                $('#available-hours').text(EALang.no_available_hours);
-            }
-        });
+        //var formData = JSON.parse($('input[name="post_data"]').val());
+        //console.log(JSON.stringify(formData);
     };
 
     /**
@@ -364,7 +415,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         $('#select-date .ui-datepicker-calendar td:not(.ui-datepicker-other-month)').each(function (index, td) {
             selectedDate.set({day: index + 1});
             if (unavailableDates.indexOf(selectedDate.toString('yyyy-MM-dd')) !== -1) {
-                $(td).addClass('ui-datepicker-unselectable ui-state-disabled');
+                $(td).addClass('custom-selectable'); //CUSTOM CODE to enable click on grey
             }
         });
 

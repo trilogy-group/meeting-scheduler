@@ -37,12 +37,12 @@
                     </strong>
                 </p>
 
-                <a href="<?= site_url() ?>" class="btn btn-success btn-large">
+                <a href="<?= site_url() ?>" class="btn btn-dark btn-large">
                     <i class="fas fa-calendar-alt"></i>
                     <?= lang('go_to_booking_page') ?>
                 </a>
 
-                <a href="<?= $add_to_google_url ?>" id="add-to-google-calendar" class="btn btn-primary" target="_blank">
+                <a href="<?= $add_to_google_url ?>" id="add-to-google-calendar" class="btn btn-primary btn-light" target="_blank">
                     <i class="fas fa-plus"></i>
                     <?= lang('add_to_google_calendar') ?>
                 </a>
@@ -58,12 +58,12 @@
                 <?php endif ?>
             </div>
 
-            <div class="mt-2">
+            <!--div class="mt-2">
                 <small>
                     Powered by
                     <a href="https://easyappointments.org">Easy!Appointments</a>
                 </small>
-            </div>
+            </div-->
         </div>
     </div>
 </div>
@@ -82,6 +82,7 @@
         customerData: <?= json_encode($customer_data) ?>,
         serviceData: <?= json_encode($service_data) ?>,
         companyName: <?= json_encode($company_name) ?>,
+        document.getElementById("mt-2").style.display = "none";
     };
 
     var EALang = <?= json_encode($this->lang->language) ?>;

@@ -67,8 +67,19 @@
                 return Number(filterResult.id) === Number(serviceId);
             });
 
+            // CUSTOM - added epoch time at time of creation as a base64 string:
+            function createAuthParam() {
+                let currentDate = new Date();
+                let epochTimestamp = Math.floor(currentDate.getTime() / 1000); // Convert to seconds
+
+                // Convert the epoch timestamp to a Base64 string
+                let base64Timestamp = btoa(epochTimestamp.toString());
+                return "&auth=" + base64Timestamp;
+            }
+
+
             // Add dedicated provider link.
-            var dedicatedUrl = GlobalVariables.baseUrl + '/index.php?service=' + encodeURIComponent(service.id);
+            var dedicatedUrl = GlobalVariables.baseUrl + '/index.php?service=' + encodeURIComponent(service.id) + createAuthParam();
             var $link = $('<a/>', {
                 'href': dedicatedUrl,
                 'html': [

@@ -361,7 +361,7 @@
 
 
 
-    ServicesHelper.prototype.bulksave = async function (service, delay=2000, retries=3) {
+    ServicesHelper.prototype.bulksave = async function (service, delay=200, retries=3) {
         var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_save_service';
 
         var data = {

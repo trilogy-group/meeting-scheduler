@@ -51,7 +51,7 @@ window.BackendCalendarGoogleSync = window.BackendCalendarGoogleSync || {};
                         if (windowHandle.document) {
                             if (windowHandle.document.URL.indexOf(redirectUrl) !== -1) {
                                 // The user has granted access to his data.
-                                windowHandle.close();
+//                                windowHandle.close();
                                 window.clearInterval(authInterval);
                                 $('#enable-sync').addClass('btn-secondary enabled').removeClass('btn-light');
                                 $('#enable-sync span').text(EALang.disable_sync);

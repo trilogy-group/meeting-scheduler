@@ -249,7 +249,7 @@
                     <h2 class="frame-title"><?= lang('customer_information') ?></h2>
 
                     <div class="row frame-content">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label for="first-name" class="control-label">
                                     <?= lang('first_name') ?>
@@ -280,17 +280,24 @@
                                 <input type="text" id="phone-number" maxlength="60"
                                        class="<?= $require_phone_number === '1' ? 'required' : '' ?> form-control"/>
                             </div>
-                        </div>
-
-                        <div class="col-12 col-md-6">
                             <div class="form-group">
-<!-- CUSTOM Address field used to store ticket number and have been made "required" --> 
-                                <label for="address" class="control-label">
-                                    <?= lang('address') ?>
+                                <label for="notes" class="control-label">
+                                    <?= lang('notes') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="address" class="required form-control" maxlength="120"/>
+                                <input type="text" id="notes" class="required form-control" maxlength="120"/>
+                                <!--textarea id="notes" maxlength="500" class="form-control" rows="1"></textarea-->
                             </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-group">
+<!-- CUSTOM Address field  removed and notes used to store ticket number and has been made mandatory -->
+                                <label for="address" class="control-label">
+                                    <?= lang('address') ?>
+                                </label>
+                                <input type="text" id="address" class="form-control" maxlength="120"/>
+			    </div>
                             <div class="form-group">
                                 <label for="city" class="control-label">
                                     <?= lang('city') ?>
@@ -304,10 +311,12 @@
                                 <input type="text" id="zip-code" class="form-control" maxlength="120"/>
                             </div>
                             <div class="form-group">
-                                <label for="notes" class="control-label">
+                                <label for="notes-orig" class="control-label">
                                     <?= lang('notes') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
-                                <textarea id="notes" maxlength="500" class="form-control" rows="1"></textarea>
+                                <input type="text" id="notes-orig" class="form-control" maxlength="120"/>
+                                <!--textarea id="notes" maxlength="500" class="form-control" rows="1"></textarea-->
                             </div>
                         </div>
                     </div>
@@ -459,10 +468,14 @@
     var availableLanguages = <?= json_encode(config('available_languages')) ?>;
     document.querySelector('label[for="zip-code"]').style.display = "none";
     document.getElementById("zip-code").style.display = "none";
+    document.querySelector('label[for="address"]').style.display = "none";
+    document.getElementById("address").style.display = "none";
     document.querySelector('label[for="city"]').style.display = "none";
     document.getElementById("city").style.display = "none";
     document.querySelector('label[for="last-name"]').style.display = "none";
     document.getElementById("last-name").style.display = "none";
+    document.querySelector('label[for="notes-orig"]').style.display = "none";
+    document.getElementById("notes-orig").style.display = "none";
     var back2 = document.getElementById("button-back-2");
     back2.style.visibility = "hidden";
     back2.style.width = "0px";

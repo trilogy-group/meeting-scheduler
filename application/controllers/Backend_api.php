@@ -903,6 +903,43 @@ class Backend_api extends EA_Controller {
             ->set_output(json_encode($response));
     }
 
+
+    /**
+     * Get Products from Google Sheet to feed the "Sync Trilogy Products" button.
+     */
+
+    public function ajax_sync_trilogy_data()
+    {
+        try
+        {
+            $filePath = FCPATH . 'assets/js/trilogyfetch/output.json';
+            if (file_exists($filePath) && filesize($filePath) > 0) {
+                $output = file_get_contents($filePath);
+                $response = array( 
+                    "status" => AJAX_SUCCESS, 
+                    "data" => json_decode($output, true)
+                );
+            } else {
+                throw new Exception("Output file doesn't exist at ./assets/js/trilogyfetch/output.json");
+            }
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+
+
     /**
      * Save (insert or update) service record.
      */
@@ -1290,7 +1327,7 @@ class Backend_api extends EA_Controller {
         catch (Exception $exception)
         {
             $this->output->set_status_header(500);
-
+            log_message('debug', print_r($exception,true));
             $response = [
                 'message' => $exception->getMessage(),
                 'trace' => config('debug') ? $exception->getTrace() : []

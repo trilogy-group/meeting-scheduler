@@ -9,6 +9,7 @@
  * @since       v1.0.0
  * ---------------------------------------------------------------------------- */
 
+
 (function () {
 
     'use strict';
@@ -165,9 +166,122 @@
             if (!instance.validate()) {
                 return;
             }
-
+            console.log(JSON.stringify(service,null,2));
             instance.save(service);
         });
+
+        /**
+         * Event: Sync Trilogy Products Button "Click"
+         */
+
+        let serviceIds = {};
+        let services = [];
+
+        $('#services').on('click', '#onboard-backup', function () {
+            $('.service-row.entry').each(function () {
+                var serviceId = $(this).attr('data-id');
+                var label = $(this).find('strong').html();
+                serviceIds[label] = serviceId;
+            });
+
+            // Sub function to read from file ./assets/js/trilogyfetch/output.json  
+            var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_sync_trilogy_data';
+            $.get(url)
+                .done(function (response) {
+                    try {
+                        const parsed = JSON.parse(JSON.stringify(response, null, 2));
+                        const products = parsed.data.products;
+                        Object.values(products).forEach(function (value) {
+                            const service = "Remote Session - " + value;
+                            services.push(service);
+                        });
+                    } catch (parseError) {
+                        console.log('Problem parsing the response from ajax_sync_trilogy_data', parseError);
+                    }
+
+                    var promiseChain = Promise.resolve();
+                    services.forEach(function (service) {
+                        var serviceObj = {
+                            name: service,
+                            duration: "35",
+                            price: "0.00",
+                            currency: "",
+                            description: "",
+                            location: "",
+                            availabilities_type: "fixed",
+                            attendants_number: "1",
+                            id_service_categories: null
+                        };
+                        if (serviceIds[service] !== undefined) {
+                            serviceObj.id = serviceIds[service];
+                        }
+
+                        promiseChain = promiseChain.then(function () {
+                            return instance.bulksave(serviceObj);
+                        });
+                    });
+
+                    promiseChain.then(function () {
+                        console.log('All services processed.');
+                    }).catch(function (error) {
+                        console.error('Error saving services:', error);
+                    });
+                });
+        });
+
+        $('#services').on('click', '#onboard-all', async function () {
+            $('.service-row.entry').each(function() {
+                var serviceId = $(this).attr('data-id');
+                var label = $(this).find('strong').html();
+                serviceIds[label] = serviceId;
+            });
+
+            // Sub function to read from file ./assets/js/trilogyfetch/output.json  
+            var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_sync_trilogy_data';
+            $.get(url)
+                .done(async function (response) {
+                    try 
+                    {
+                        const parsed = JSON.parse(JSON.stringify(response,null,2));
+                        const products = parsed.data.products;
+                        Object.values(products).forEach( value => {
+                            const service = "Remote Session - " + value;
+                            services.push(service);
+                        });
+                    } 
+                    catch (parseError) 
+                    { 
+                        console.log('Problem parsing the response from ajax_sync_trilogy_data', parseError);
+                    }
+                    var promiseChain = Promise.resolve();
+                    services.forEach(service => {
+                        var serviceObj = {
+                            name: service,
+                            duration: "35",
+                            price: "0.00",
+                            currency: "",
+                            description: "",
+                            location: "",
+                            availabilities_type: "fixed",
+                            attendants_number: "1",
+                            id_service_categories: null
+                        };
+                        if (serviceIds[service] !== undefined) {
+                            serviceObj.id = serviceIds[service];
+                        }
+                        promiseChain = promiseChain.then(function () {
+                            return instance.bulksave(serviceObj);
+                        });
+                        
+                    });
+                        promiseChain.then(function () { // Different: managing promise chain resolution
+                            console.log('All services processed.'); 
+                        }).catch(function (error) { // Different: error handling in promise chain
+                            console.error('Error saving services:', error);   
+                        });
+                }); 
+        });
+
 
         /**
          * Event: Edit Service Button "Click"
@@ -236,7 +350,6 @@
             csrfToken: GlobalVariables.csrfToken,
             service: JSON.stringify(service)
         };
-
         $.post(url, data)
             .done(function (response) {
                 Backend.displayNotification(EALang.service_saved);
@@ -245,6 +358,44 @@
                 this.filter('', response.id, true);
             }.bind(this));
     };
+
+
+
+    ServicesHelper.prototype.bulksave = async function (service, delay=200, retries=3) {
+        var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_save_service';
+
+        var data = {
+            csrfToken: GlobalVariables.csrfToken,
+            service: JSON.stringify(service)
+        };
+        var self = this;
+        await new Promise(resolve => setTimeout(resolve, delay)); 
+
+        try {
+            const response = await self.post(url, data);
+            console.log("Created a product");
+        } catch (error) {
+            const textStatus = error.status;
+            const errorThrown = error.responseText;
+            if (error.status === 429 && retries > 0) {
+                console.log("Retrying ...");
+                await self.bulksave(service, delay + 2000, retries - 1);
+            } else {
+                console.error("Error: " + textStatus + " - " + errorThrown);
+            }
+        }
+    };
+    //
+
+// A utility method to wrap $.post in a Promise
+ServicesHelper.prototype.post = function (url, data) {
+    return new Promise((resolve, reject) => {
+        $.post(url, data)
+            .done(resolve)
+            .fail((jqXHR) => reject(jqXHR));
+    });
+};
+
 
     /**
      * Delete a service record from database.

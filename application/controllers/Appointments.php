@@ -206,16 +206,19 @@ class Appointments extends EA_Controller {
             }
 
             if (!$authString) {
-                show_error('Sorry this Link has  expired. Please contact support again.', 401);
+		redirect('sorry');
+		return;
             }
             $epochTimestamp = base64_decode($authString);
-            if ($epochTimestamp === false) {
-                show_error('Sorry this Link has  expired. Please contact support again.', 401);
+            if ($epochTimestamp === false || !ctype_digit($epochTimestamp)) {
+		redirect('sorry');
+		return;
             }
             $currentTimestamp = time();
             $sevenDaysInSeconds = 7 * 24 * 60 * 60;
             if (($currentTimestamp - $epochTimestamp) > $sevenDaysInSeconds) {
-                show_error('Sorry this Link has  expired. Please contact support again.', 401);
+		redirect('sorry');
+		return;
             }
                 // Continue Loading the book appointment view.
 
@@ -575,18 +578,23 @@ class Appointments extends EA_Controller {
     {
         try
         {
+	    log_message('debug', 'Trying now');
             $post_data = $this->input->post('post_data');
             $captcha = $this->input->post('captcha');
             $manage_mode = filter_var($post_data['manage_mode'], FILTER_VALIDATE_BOOLEAN);
             $appointment = $post_data['appointment'];
+	    log_message('debug', 'Appointment data' .  print_r($appointment, true));
             $customer = $post_data['customer'];
+	    log_message('debug', 'Customer data' .  print_r($customer,true));
 
             // Check appointment availability before registering it to the database.
             $appointment['id_users_provider'] = $this->check_datetime_availability();
 
             if ( ! $appointment['id_users_provider'])
             {
+		    log_message('debug', 'requested_hour_is_unavailable');
                 throw new Exception(lang('requested_hour_is_unavailable'));
+
             }
 
             $provider = $this->providers_model->get_row($appointment['id_users_provider']);
@@ -619,23 +627,46 @@ class Appointments extends EA_Controller {
 
             // Save customer language (the language which is used to render the booking page).
             $customer['language'] = config('language');
-            $customer_id = $this->customers_model->add($customer);
-
+	    
+	    $customer_id = $this->customers_model->add($customer);
+	    
+	    if (empty($appointment['start_datetime'])) {
+		    log_message('debug', 'Start datetime is not set.');
+		    throw new \Exception('Start datetime is not set.');
+	    }
             $appointment_start_instance = new DateTime($appointment['start_datetime']);
+	    
+	    if (empty($service['duration'])) {
+		    log_message('debug', 'Service duration could not be pulled');
+		    throw new \Exception('Service duration could not be pulled');
+	    }
+
             $appointment['end_datetime'] = $appointment_start_instance
                 ->add(new DateInterval('PT' . $service['duration'] . 'M'))
                 ->format('Y-m-d H:i:s');
 
+	    if (empty($service['id']) || empty($provider['services']) || !is_array($provider['services'])) {
+		    log_message('debug', 'Invalid service[id] or provider[services] on checking');
+		throw new \Exception('Invalid service[id] or provider[services] on checking');
+	    }
             if ( ! in_array($service['id'], $provider['services']))
             {
-                throw new Exception('Invalid provider record selected for appointment.');
+		    log_message('debug', 'Invalid provider record selected for appointment.');
+                throw new \Exception('Invalid provider record selected for appointment.');
             }
 
             $appointment['id_users_customer'] = $customer_id;
             $appointment['is_unavailable'] = (int)$appointment['is_unavailable']; // needs to be type casted
             $appointment['id'] = $this->appointments_model->add($appointment);
+	    if ($appointment['id'] === null) {
+		    log_message('debug', 'Failed to add appointment.');
+	        throw new \Exception('Failed to add appointment.');
+	    }
             $appointment['hash'] = $this->appointments_model->get_value('hash', $appointment['id']);
-
+	     if ($appointment['id'] === null) {
+		    log_message('debug', 'Failed to get appointment hash');
+	        throw new \Exception('Failed to get appointment hash');
+	    }	
             $settings = [
                 'company_name' => $this->settings_model->get_setting('company_name'),
                 'company_link' => $this->settings_model->get_setting('company_link'),
@@ -643,19 +674,23 @@ class Appointments extends EA_Controller {
                 'date_format' => $this->settings_model->get_setting('date_format'),
                 'time_format' => $this->settings_model->get_setting('time_format')
             ];
-
+	    log_message('debug', 'response generated');
+	    log_message('debug', 'sync attempt even now');
             $this->synchronization->sync_appointment_saved($appointment, $service, $provider, $customer, $settings, $manage_mode);
+	    log_message('debug', 'sync ended');
             $this->notifications->notify_appointment_saved($appointment, $service, $provider, $customer, $settings, $manage_mode);
-
+	    log_message('debug', 'notification ended');
             $response = [
                 'appointment_id' => $appointment['id'],
                 'appointment_hash' => $appointment['hash']
             ];
+	    
         }
         catch (Exception $exception)
         {
             $this->output->set_status_header(500);
 
+	    log_message('debug', "Error happened" . print_r($exception, true));
             $response = [
                 'message' => $exception->getMessage(),
                 'trace' => config('debug') ? $exception->getTrace() : []

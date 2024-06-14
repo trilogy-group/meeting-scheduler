@@ -31,10 +31,10 @@ class Timezones {
     protected $timezones = [
         'UTC' => [
             'UTC' => 'UTC',
-            'S1' => 'Jakarta (+7:00)',
-            'S2' => 'Algiers (+1:00)',
-            'S3' => 'Jamaica (-5:00)',
-            'S4' => 'Niue (−11:00)',
+            'S1' => 'S1',
+            'S2' => 'S2',
+            'S3' => 'S3',
+            'S4' => 'S4',
         ],
         'America' => [
             'America/Adak' => 'Adak (-10:00)',

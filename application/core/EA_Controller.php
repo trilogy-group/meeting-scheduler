@@ -65,7 +65,6 @@ class EA_Controller extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-
         $this->configure_language();
         
         rate_limit($this->input->ip_address());

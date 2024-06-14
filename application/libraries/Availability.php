@@ -343,10 +343,11 @@ class Availability {
 
         foreach ($empty_periods as $period)
         {
+	    log_message('debug', 'Period is: ' . print_r($period, true));
             $start_hour = new DateTime($date . ' ' . $period['start']);
             $end_hour = new DateTime($date . ' ' . $period['end']);
-            $interval = $service['availabilities_type'] === AVAILABILITIES_TYPE_FIXED ? (int)$service['duration'] : 15;
-
+            //$interval = $service['availabilities_type'] === AVAILABILITIES_TYPE_FIXED ? (int)$service['duration'] : 15;
+	    $interval = 30;
             $current_hour = $start_hour;
             $diff = $current_hour->diff($end_hour);
 

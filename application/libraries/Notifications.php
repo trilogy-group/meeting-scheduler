@@ -77,11 +77,11 @@ class Notifications {
                 $provider_title = new Text(lang('appointment_added_to_your_plan'));
                 $provider_message = new Text(lang('appointment_link_description'));
             }
-
+	    $ticket = $appointment['notes'];
             $customer_link = new Url(site_url('appointments/index/' . $appointment['hash']));
             $provider_link = new Url(site_url('backend/index/' . $appointment['hash']));
-
-            $ics_stream = $this->CI->ics_file->get_stream($appointment, $service, $provider, $customer);
+		
+            $ics_stream = $this->CI->ics_file->get_stream($appointment, $service, $provider, $customer, $ticket);
 
             $send_customer = filter_var(
                 $this->CI->settings_model->get_setting('customer_notifications'),
@@ -89,56 +89,61 @@ class Notifications {
 
             if ($send_customer === TRUE)
             {
+		    
+		log_message('debug', 'sending customer email');
                 $email->send_appointment_details($appointment, $provider,
                     $service, $customer, $settings, $customer_title,
                     $customer_message, $customer_link, new Email($customer['email']), new Text($ics_stream), $customer['timezone']);
+		log_message('debug', 'sent customer email');
             }
 
-            $send_provider = filter_var(
-                $this->CI->providers_model->get_setting('notifications', $provider['id']),
-                FILTER_VALIDATE_BOOLEAN);
+            $send_provider = TRUE; //filter_var(
+//                $this->CI->providers_model->get_setting('notifications', $provider['id']),
+//                FILTER_VALIDATE_BOOLEAN);
 
+	   
             if ($send_provider === TRUE)
             {
+		log_message('debug', 'sending provider email');
                 $email->send_appointment_details($appointment, $provider,
                     $service, $customer, $settings, $provider_title,
-                    $provider_message, $provider_link, new Email($provider['email']), new Text($ics_stream), $provider['timezone']);
+                    $provider_message, $provider_link, new Email($provider['email']), new Text($ics_stream), $customer['timezone']);
+		log_message('debug', 'sent provider email');
             }
 
-            // Notify admins
-            $admins = $this->CI->admins_model->get_batch();
-
-            foreach ($admins as $admin)
-            {
-                if ($admin['settings']['notifications'] === '0')
-                {
-                    continue;
-                }
-
-                $email->send_appointment_details($appointment, $provider,
-                    $service, $customer, $settings, $provider_title,
-                    $provider_message, $provider_link, new Email($admin['email']), new Text($ics_stream), $admin['timezone']);
-            }
-
-            // Notify secretaries
-            $secretaries = $this->CI->secretaries_model->get_batch();
-
-            foreach ($secretaries as $secretary)
-            {
-                if ($secretary['settings']['notifications'] === '0')
-                {
-                    continue;
-                }
-
-                if (!in_array($provider['id'], $secretary['providers']))
-                {
-                    continue;
-                }
-
-                $email->send_appointment_details($appointment, $provider,
-                    $service, $customer, $settings, $provider_title,
-                    $provider_message, $provider_link, new Email($secretary['email']), new Text($ics_stream), $secretary['timezone']);
-            }
+//            // Notify admins
+//            $admins = $this->CI->admins_model->get_batch();
+//	    log_message('debug', 'printing admins' . print_r($admins, true));
+//            foreach ($admins as $admin)
+//            {
+//                if ($admin['settings']['notifications'] === '0')
+//                {
+//                    continue;
+//                }
+//
+//                $email->send_appointment_details($appointment, $provider,
+//                    $service, $customer, $settings, $provider_title,
+//                    $provider_message, $provider_link, new Email($admin['email']), new Text($ics_stream), $admin['timezone']);
+//            }
+//            // Notify secretaries
+//            $secretaries = $this->CI->secretaries_model->get_batch();
+//
+//            foreach ($secretaries as $secretary)
+//            {
+//                if ($secretary['settings']['notifications'] === '0')
+//                {
+//                    continue;
+//                }
+//
+//                if (!in_array($provider['id'], $secretary['providers']))
+//                {
+//                    continue;
+//                }
+//
+//                $email->send_appointment_details($appointment, $provider,
+//                    $service, $customer, $settings, $provider_title,
+//                    $provider_message, $provider_link, new Email($secretary['email']), new Text($ics_stream), $secretary['timezone']);
+//            }
         }
         catch (Exception $exception)
         {

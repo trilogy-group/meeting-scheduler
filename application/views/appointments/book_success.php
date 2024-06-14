@@ -31,7 +31,7 @@
                 </br>
                 <p> </p>
 
-                <!-- p>
+                <!--p>
                     <?= lang('appointment_details_was_sent_to_you') ?>
                 </p>
 
@@ -86,9 +86,7 @@
         customerData: <?= json_encode($customer_data) ?>,
         serviceData: <?= json_encode($service_data) ?>,
         companyName: <?= json_encode($company_name) ?>,
-        document.getElementById("mt-2").style.display = "none";
     };
-
     var EALang = <?= json_encode($this->lang->language) ?>;
 </script>
 

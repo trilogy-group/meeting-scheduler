@@ -1,5 +1,6 @@
 const { google } = require('googleapis');
 const fs = require('fs');
+const path = require('path');
 
 // Start of Global Space
 const productNames = {
@@ -307,9 +308,11 @@ const getProducts = async function () {
                 agentObj['lastName'] = lastName;
                 agentObj['zdId'] = row[2];
                 agentObj['products'] = agentObj['products'] || [];
-                agentObj['products'].push(row[3]);
                 agentObj['shift'] = row[4];
                 agentObj['team'] = row[5];
+                if (agentObj.team === "C" || agentObj.team === "L2") {
+                    agentObj['products'].push(row[3]);
+                }
             }
         });
     });
@@ -318,7 +321,7 @@ const getProducts = async function () {
         'agents' : agentList
     };
 
-    fs.writeFileSync('/opt/homebrew/var/www/meeting-scheduler/assets/js/trilogyfetch/output.json', JSON.stringify(response,null,2));
+    fs.writeFileSync(__dirname + '/output.json', JSON.stringify(response,null,2));
 }
 
 

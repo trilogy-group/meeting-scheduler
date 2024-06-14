@@ -34,6 +34,8 @@ window.BackendCalendarGoogleSync = window.BackendCalendarGoogleSync || {};
          */
         $('#enable-sync').on('click', function () {
             if ($('#enable-sync').hasClass('enabled') === false) {
+		var stateId = 'oauth_' + Math.random().toString(36).substr(2, 9);
+		localStorage.setItem('oauthStateId', stateId);
                 // Enable synchronization for selected provider.
                 var authUrl = GlobalVariables.baseUrl + '/index.php/google/oauth/'
                     + $('#select-filter-item').val();
@@ -43,16 +45,21 @@ window.BackendCalendarGoogleSync = window.BackendCalendarGoogleSync || {};
                 var windowHandle = window.open(authUrl, 'Authorize Easy!Appointments',
                     'width=800, height=600');
 
-                var authInterval = window.setInterval(function () {
+//                var authInterval = window.setInterval(function () {
                     // When the browser redirects to the google user consent page the "window.document" variable
                     // becomes "undefined" and when it comes back to the redirect URL it changes back. So check
                     // whether the variable is undefined to avoid javascript errors.
-                    try {
-                        if (windowHandle.document) {
-                            if (windowHandle.document.URL.indexOf(redirectUrl) !== -1) {
+		    window.addEventListener('storage', function(event) {
+		    	if (event.key === 'oauthSuccess') {
+			    try {
+//                        if (windowHandle.document) {
+//                            if (windowHandle.document.URL.indexOf(redirectUrl) !== -1) {
                                 // The user has granted access to his data.
-//                                windowHandle.close();
-                                window.clearInterval(authInterval);
+                               // windowHandle.close();
+			    	localStorage.removeItem('oauthSuccess');
+				localStorage.removeItem('oauthStateId');
+
+//                                window.clearInterval(authInterval);
                                 $('#enable-sync').addClass('btn-secondary enabled').removeClass('btn-light');
                                 $('#enable-sync span').text(EALang.disable_sync);
                                 $('#google-sync').prop('disabled', false);
@@ -67,7 +74,7 @@ window.BackendCalendarGoogleSync = window.BackendCalendarGoogleSync || {};
                                     csrfToken: GlobalVariables.csrfToken,
                                     provider_id: $('#select-filter-item').val()
                                 };
-
+				console.log(JSON.stringify(data,null,2));
                                 $.post(url, data)
                                     .done(function (response) {
                                         $('#google-calendar').empty();
@@ -78,14 +85,16 @@ window.BackendCalendarGoogleSync = window.BackendCalendarGoogleSync || {};
 
                                         $('#select-google-calendar').modal('show');
                                     });
-                            }
-                        }
-                    } catch (Error) {
-                        // Accessing the document object before the window is loaded throws an error, but it will only
-                        // happen during the initialization of the window. Attaching "load" event handling is not
-                        // possible due to CORS restrictions.
-                    }
-                }, 100);
+                        
+			    } catch (Error) {
+				// Accessing the document object before the window is loaded throws an error, but it will only
+				// happen during the initialization of the window. Attaching "load" event handling is not
+				// possible due to CORS restrictions.
+				   console.error('There was an Error: ', Error);
+			    }
+			}
+		    });
+//                }, 100);
 
             } else {
                 var buttons = [

@@ -26,6 +26,10 @@ class Privacy extends EA_Controller {
         $this->load->driver('cache', ['adapter' => 'file']);
         $this->load->model('customers_model');
     }
+    public function index()
+    {
+        $this->load->view('general/privacy');
+    }
 
     /**
      * Remove all customer data (including appointments from the system).

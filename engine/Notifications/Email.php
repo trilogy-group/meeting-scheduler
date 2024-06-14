@@ -150,22 +150,23 @@ class Email {
             'customer_name' => $customer['first_name'] . ' ' . $customer['last_name'],
             'customer_email' => $customer['email'],
             'customer_phone' => $customer['phone_number'],
+	    'ticket' => $appointment['notes'],
             'customer_address' => $customer['address'],
         ], TRUE);
 
         $mailer = $this->create_mailer();
-        $mailer->From = $settings['company_email'];
-        $mailer->FromName = $settings['company_name'];
+        $mailer->setFrom($settings['company_email'], 'Meeting Scheduler');
+	$mailer->addReplyTo($settings['company_email'], 'Meeting Scheduler');
         $mailer->AddAddress($recipient_email->get());
         $mailer->Subject = $title->get();
         $mailer->Body = $html;
         $mailer->addStringAttachment($ics_stream->get(), 'invitation.ics');
-
+	$mailer->Timeout = 30;
         if ( ! $mailer->Send())
         {
             throw new RuntimeException('Email could not been sent. Mailer Error (Line ' . __LINE__ . '): '
                 . $mailer->ErrorInfo);
-        }
+	}
     }
 
     /**
@@ -243,7 +244,8 @@ class Email {
             'appointment_provider' => $provider['first_name'] . ' ' . $provider['last_name'],
             'appointment_date' => $appointment_start->format($date_format . ' ' . $time_format),
             'appointment_duration' => $service['duration'] . ' ' . lang('minutes'),
-            'appointment_timezone' => $timezones[empty($timezone) ? $provider['timezone'] : $timezone],
+//removed insertion of provider timezone as those are not actual timezones but shifts mapped to 8am to 5pm => $timezones[ empty($timezone) ? $provider['timezone'] : $timezone],
+            'appointment_timezone' => $timezones[$timezone], 
             'company_link' => $settings['company_link'],
             'company_name' => $settings['company_name'],
             'customer_name' => $customer['first_name'] . ' ' . $customer['last_name'],
@@ -256,8 +258,8 @@ class Email {
         $mailer = $this->create_mailer();
 
         // Send email to recipient.
-        $mailer->From = $settings['company_email'];
-        $mailer->FromName = $settings['company_name'];
+        $mailer->setFrom($settings['company_email'], 'Meeting Scheduler');
+	$mailer->addReplyTo($settings['company_email'], 'Meeting Scheduler');
         $mailer->AddAddress($recipient_email->get()); // "Name" argument crushes the phpmailer class.
         $mailer->Subject = lang('appointment_cancelled_title');
         $mailer->Body = $html;
@@ -290,8 +292,8 @@ class Email {
 
         $mailer = $this->create_mailer();
 
-        $mailer->From = $settings['company_email'];
-        $mailer->FromName = $settings['company_name'];
+        $mailer->setFrom($settings['company_email'], 'Meeting Scheduler');
+	$mailer->addReplyTo($settings['company_email'], 'Meeting Scheduler');
         $mailer->AddAddress($recipientEmail->get()); // "Name" argument crushes the phpmailer class.
         $mailer->Subject = lang('new_account_password');
         $mailer->Body = $html;
@@ -308,8 +310,7 @@ class Email {
      *
      * @return PHPMailer
      */
-    protected function create_mailer()
-    {
+    protected function create_mailer() {
         $mailer = new PHPMailer();
 
         if ($this->config['protocol'] === 'smtp')

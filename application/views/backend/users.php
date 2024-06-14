@@ -100,6 +100,9 @@
                                 <i class="fas fa-trash-alt mr-2"></i>
                                 <?= lang('delete') ?>
                             </button>
+                            <button id="sync-trilogy-agents" class="btn btn-primary">
+                               Sync Trilogy Agents 
+                            </button>
                         </div>
 
                         <div class="save-cancel-group btn-group" style="display:none;">

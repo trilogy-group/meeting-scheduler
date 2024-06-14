@@ -83,6 +83,9 @@
                                 <i class="fas fa-trash-alt mr-2"></i>
                                 <?= lang('delete') ?>
                             </button>
+                            <button id="onboard-all" class="btn btn-outline-secondary" disabled="disabled">
+                            Sync Trilogy Products
+                            </button>
                         </div>
 
                         <div class="save-cancel-group btn-group" style="display:none;">

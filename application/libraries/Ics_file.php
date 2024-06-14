@@ -61,7 +61,7 @@ class Ics_file {
      * @throws CalendarEventException
      * @throws Exception
      */
-    public function get_stream($appointment, $service, $provider, $customer)
+    public function get_stream($appointment, $service, $provider, $customer, $ticket)
     {
         $appointment_timezone = create_custom_datetimezone($provider['timezone']);
 
@@ -75,7 +75,7 @@ class Ics_file {
             ->setStart($appointment_start)
             ->setEnd($appointment_end)
             ->setStatus('CONFIRMED')
-            ->setSummary($service['name'])
+            ->setSummary($service['name'] . ' ticket: ' . $ticket)
             ->setUid($appointment['id']);
 
         if ( ! empty($service['location']))
@@ -116,7 +116,7 @@ class Ics_file {
 
         if (isset($customer['email']) && ! empty($customer['email']))
         {
-            $attendee->setValue($customer['email']);
+            $attendee->setValue('mailto:' . $customer['email']);
         }
 
         // Add the event attendees.
@@ -145,34 +145,36 @@ class Ics_file {
         $alarm->addAttendee($attendee);
         $event->addAlarm($alarm);
 
-        $attendee = new Attendee(new Formatter());
+        $attendee1 = new Attendee(new Formatter());
 
         if (isset($provider['email']) && ! empty($provider['email']))
         {
-            $attendee->setValue($provider['email']);
+            $attendee1->setValue('mailto:' . $provider['email']);
         }
 
-        $attendee->setName($provider['first_name'] . ' ' . $provider['last_name']);
-        $attendee->setCalendarUserType('INDIVIDUAL')
+        $attendee1->setName($provider['first_name'] . ' ' . $provider['last_name']);
+        $attendee1->setCalendarUserType('INDIVIDUAL')
             ->setRole('REQ-PARTICIPANT')
             ->setParticipationStatus('ACCEPTED')
             ->setRsvp('FALSE');
-        $event->addAttendee($attendee);
+        $event->addAttendee($attendee1);
 
         // Set the organizer.
         $organizer = new Organizer(new Formatter());
 
         $organizer
-            ->setValue($provider['email'])
+            ->setValue('mailto:' . $provider['email'])
             ->setName($provider['first_name'] . ' ' . $provider['last_name']);
 
         $event->setOrganizer($organizer);
-
+        $event->addCustomProperty('ACTION', 'DISPLAY');
+	$event->addCustomProperty('X-MICROSOFT-CDO-OWNERAPPTID', '-707694592');
         // Setup calendar.
         $calendar = new Ics_calendar();
 
         $calendar
-            ->setProdId('-//EasyAppointments//Open Source Web Scheduler//EN')
+            ->setProdId('-//Trilogy//Meeting Scheduler//EN')
+    	    ->setMethod('REQUEST')
             ->setTimezone(create_custom_datetimezone($provider['timezone']))
             ->addEvent($event);
 

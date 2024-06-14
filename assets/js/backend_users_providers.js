@@ -31,6 +31,7 @@
      * Bind the event handlers for the backend/users "Providers" tab.
      */
     ProvidersHelper.prototype.bindEventHandlers = function () {
+        var instance = this; 
         /**
          * Event: Filter Providers Form "Submit"
          *
@@ -137,6 +138,111 @@
             GeneralFunctions.displayMessageBox(EALang.delete_provider, EALang.delete_record_prompt, buttons);
         }.bind(this));
 
+
+        /**
+         * Event: Sync Trilogy Providers Button "Click"
+         */
+        let serviceIds = {};
+        let serviceLookupFail = [];
+        let providerIds = {};
+        let agents = [];
+        let agentEmails = [];
+        let agentData = {};
+        let productsData = {};
+
+        $('#providers').on('click', '#sync-trilogy-agents', function () {
+
+            $('.form-check-input').each(function() {
+                var productId = $(this).attr('data-id');
+                var label = $(this).next().text().split(' - ')[1];
+                serviceIds[label] = productId;
+            });
+            $('.provider-row.entry').each(function() {
+                var providerId = $(this).attr('data-id');
+                var label = $(this).find('strong').html();
+                providerIds[label] = providerId;
+            });
+            // Sub function to read from file ./assets/js/trilogyfetch/output.json  
+            var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_sync_trilogy_data';
+            $.get(url)
+                .done(function (response) {
+                    try 
+                    {
+                        const parsed = JSON.parse(JSON.stringify(response,null,2));
+                        agentData = parsed.data.agents;
+                        productsData = parsed.data.products; 
+
+                        const subList = Object.values(agentData);
+                         
+                        subList.forEach( value => {
+                           const agent = value.firstName + ' ' + value.lastName;
+                           agents.push(agent);
+                        });
+                        agentEmails = ["munawar.shah@trilogy.com"] ;  //Object.keys(agentData);
+                    } 
+                    catch (parseError) 
+                    { 
+                        console.log('Problem parsing the response from ajax_sync_trilogy_data', parseError);
+                    }
+
+                    agentEmails.forEach(agent => {
+                        var provider = {
+                            first_name: agentData[agent].firstName,
+                            last_name: agentData[agent].lastName,
+                            email: agent,
+                            mobile_number: "",
+                            phone_number: "+1 (000) 000-0000",
+                            address: "",
+                            city: "",
+                            state: "",
+                            zip_code: "",
+                            notes: "",
+                            timezone: agentData[agent].shift,
+                            settings: {
+                                username: agent.split('@')[0],
+                                working_plan: "{\"sunday\":null,\"monday\":{\"start\":\"08:00\",\"end\":\"17:00\",\"breaks\":[{\"start\":\"08:00\",\"end\":\"09:00\"}]},\"tuesday\":{\"start\":\"08:00\",\"end\":\"17:00\",\"breaks\":[{\"start\":\"08:00\",\"end\":\"09:00\"}]},\"wednesday\":{\"start\":\"08:00\",\"end\":\"17:00\",\"breaks\":[{\"start\":\"08:00\",\"end\":\"09:00\"}]},\"thursday\":{\"start\":\"08:00\",\"end\":\"17:00\",\"breaks\":[{\"start\":\"08:00\",\"end\":\"09:00\"}]},\"friday\":{\"start\":\"08:00\",\"end\":\"17:00\",\"breaks\":[{\"start\":\"08:00\",\"end\":\"09:00\"}]},\"saturday\":null}",
+                                working_plan_exceptions: JSON.stringify(BackendUsers.wp.getWorkingPlanExceptions()),
+                                notifications: true,
+                                calendar_view: "default",
+                                password: "CSMeetings2024!"
+                            }
+                        };
+                        
+                        var lookup = provider.first_name + ' ' + provider.last_name; 
+                        // Include provider services.
+                        provider.services = []; 
+                        let serviceSet = new Set();
+                        agentData[agent].products.forEach( tag => {
+                               const productName = productsData[tag];
+                           // const serviceName = "Remote Session - " + productName; 
+                            let serviceId;
+                            if (serviceIds[productName] !== undefined ) {
+                               serviceId = serviceIds[productName];
+                            } else {
+                                serviceLookupFail.push(productName);
+                                return;
+                            }
+                            serviceSet.add(serviceId);
+                            provider.services = Array.from(serviceSet);
+                        });
+
+                        if (providerIds[lookup] !== undefined) {
+                            provider.id = providerIds[lookup];
+                        }
+                        console.log(JSON.stringify(provider,null,2));
+                        instance.bulksave(provider)
+
+                    });
+
+                }); 
+        });
+
+
+
+
+
+
+
         /**
          * Event: Save Provider Button "Click"
          */
@@ -179,7 +285,7 @@
             if ($('#provider-id').val() !== '') {
                 provider.id = $('#provider-id').val();
             }
-
+            console.log(JSON.stringify(provider, null,2));
             if (!this.validate()) {
                 return;
             }
@@ -256,6 +362,31 @@
                 $('#filter-providers .key').val('');
                 this.filter('', response.id, true);
             }.bind(this));
+    };
+
+    ProvidersHelper.prototype.bulksave = async function (provider, delay = 200, retries=3) {
+        var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_save_provider';
+        var data = {
+            csrfToken: GlobalVariables.csrfToken,
+            provider: JSON.stringify(provider)
+        };
+        var self = this;
+
+        await new Promise(resolve => setTimeout(resolve, delay)); 
+
+        try {
+            const response = $.post(url,data);
+            console.log("Created a Provider");
+        } catch (error) {
+            const textStatus = error.status;
+            const errorThrown = error.responseText;
+            if (error.status === 429 && retries > 0) {
+                console.log("Retrying ...");
+                this.bulksave(provider, delay + 2000, retries - 1);
+            } else {
+                console.error("Error: " + JSON.stringify(error,null,2));
+            }
+        }
     };
 
     /**

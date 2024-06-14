@@ -150,12 +150,11 @@ class Google_sync {
         $this->CI->load->helper('general');
 
         $event = new Google_Service_Calendar_Event();
-        $event->setSummary(($service != NULL) ? $service['name'] : 'Unavailable');
-        $event->setDescription($appointment['notes']);
-        $event->setLocation(isset($appointment['location']) ? $appointment['location'] : $settings['company_name']);
+        $event->setSummary(($service != NULL) ? $service['name'] . ' ticket: ' . $appointment['notes'] : 'Unavailable');
+        $event->setDescription('Meeting with respect to ticket number: ' . $appointment['notes']);
+        //$event->setLocation(isset($appointment['location']) ? $appointment['location'] : $settings['company_name']);
 
         $timezone = create_custom_datetimezone($provider['timezone']);
-
         $start = new Google_Service_Calendar_EventDateTime();
         $start->setDateTime((new DateTime($appointment['start_datetime'], $timezone))->format(DateTime::RFC3339));
         $event->setStart($start);
@@ -179,9 +178,8 @@ class Google_sync {
             $event_customer->setEmail($customer['email']);
             $event->attendees[] = $event_customer;
         }
-
         // Add the new event to the google calendar.
-        $created_event = $this->service->events->insert($provider['settings']['google_calendar'], $event);
+        $created_event = $this->service->events->insert($provider['settings']['google_calendar'], $event, array('sendUpdates' => 'all'));
 
         return $created_event;
     }
@@ -321,7 +319,7 @@ class Google_sync {
         $event->setEnd($end);
 
         $updated_event = $this->service->events->update($provider['settings']['google_calendar'],
-            $event->getId(), $event);
+            $event->getId(), $event, array('sendUpdates' => 'all'));
 
         return $updated_event;
     }

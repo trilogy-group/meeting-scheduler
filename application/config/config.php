@@ -269,7 +269,7 @@ $config['directory_trigger'] = 'd'; // experimental not currently in use
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 4; // debug
+$config['log_threshold'] = 2; //debug
 ini_set('log_errors', 1);
 /*
 |--------------------------------------------------------------------------
@@ -466,7 +466,7 @@ $config['proxy_ips'] = '';
 | will control the number of requests a client can sent to the app. 
 |
 */
-$config['rate_limiting'] = TRUE;
+$config['rate_limiting'] = FALSE;
 
 
 /* End of file config.php */

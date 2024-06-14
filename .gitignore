@@ -31,4 +31,5 @@
 config.php
 meeting-scheduler-key.pem
 masproject-419222-60938e76ceb4.json
+/application/config/email.php
 .DS_Store

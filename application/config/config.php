@@ -466,7 +466,7 @@ $config['proxy_ips'] = '';
 | will control the number of requests a client can sent to the app. 
 |
 */
-$config['rate_limiting'] = FALSE;
+$config['rate_limiting'] = TRUE;
 
 
 /* End of file config.php */

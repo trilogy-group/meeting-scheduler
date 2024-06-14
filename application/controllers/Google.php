@@ -306,5 +306,6 @@ class Google extends EA_Controller {
         {
             $this->output->set_output('Sync provider id not specified.');
         }
+	$this->load->view('oauth_callback');
     }
 }

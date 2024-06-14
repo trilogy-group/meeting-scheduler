@@ -364,7 +364,7 @@
             }.bind(this));
     };
 
-    ProvidersHelper.prototype.bulksave = async function (provider, delay = 200, retries=3) {
+    ProvidersHelper.prototype.bulksave = async function (provider, delay = 2000, retries=3) {
         var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_save_provider';
         var data = {
             csrfToken: GlobalVariables.csrfToken,

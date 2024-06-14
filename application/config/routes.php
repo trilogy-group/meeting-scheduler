@@ -42,7 +42,7 @@
 $route['default_controller'] = 'appointments';
 $route['404_override'] = 'errors/error404';
 $route['privacy-policy'] = 'privacy/index';
-
+$route['google/oauth_callbck'] = 'google/oauth_callback';
 /*
 | -------------------------------------------------------------------------
 | REST API ROUTING

@@ -151,7 +151,7 @@ class Google_sync {
 
         $event = new Google_Service_Calendar_Event();
         $event->setSummary(($service != NULL) ? $service['name'] . ' ticket: ' . $appointment['notes'] : 'Unavailable');
-        $event->setDescription('Meeting with respect to ticket number: ' . $appointment['notes']);
+        $event->setDescription($appointment['notes']);
         //$event->setLocation(isset($appointment['location']) ? $appointment['location'] : $settings['company_name']);
 
         $timezone = create_custom_datetimezone($provider['timezone']);

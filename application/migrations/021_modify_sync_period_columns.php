@@ -28,13 +28,13 @@ class Migration_Modify_sync_period_columns extends CI_Migration {
                 'type' => 'INT',
                 'constraint' => '11',
                 'null' => TRUE,
-                'default' => '30'
+                'default' => '7'
             ],
             'sync_future_days' => [
                 'type' => 'INT',
                 'constraint' => '11',
                 'null' => TRUE,
-                'default' => '90'
+                'default' => '10'
             ],
         ];
 
@@ -43,7 +43,7 @@ class Migration_Modify_sync_period_columns extends CI_Migration {
         $this->db->update(
             'user_settings',
             [
-                'sync_past_days' => '30'
+                'sync_past_days' => '7'
             ],
             [
                 'sync_past_days' => '5'
@@ -53,7 +53,7 @@ class Migration_Modify_sync_period_columns extends CI_Migration {
         $this->db->update(
             'user_settings',
             [
-                'sync_future_days' => '90'
+                'sync_future_days' => '10'
             ],
             [
                 'sync_future_days' => '5'
@@ -89,7 +89,7 @@ class Migration_Modify_sync_period_columns extends CI_Migration {
                 'sync_past_days' => '5'
             ],
             [
-                'sync_past_days' => '30'
+                'sync_past_days' => '7'
             ]
         );
 
@@ -99,7 +99,7 @@ class Migration_Modify_sync_period_columns extends CI_Migration {
                 'sync_future_days' => '5'
             ],
             [
-                'sync_future_days' => '90'
+                'sync_future_days' => '10'
             ]
         );
     }

@@ -116,8 +116,8 @@ class Installation extends EA_Controller {
                     'working_plan' => $this->settings_model->get_setting('company_working_plan'),
                     'notifications' => TRUE,
                     'google_sync' => FALSE,
-                    'sync_past_days' => 30,
-                    'sync_future_days' => 90,
+                    'sync_past_days' => 7,
+                    'sync_future_days' => 10,
                     'calendar_view' => CALENDAR_VIEW_DEFAULT
                 ],
             ]);

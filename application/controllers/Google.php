@@ -177,18 +177,20 @@ class Google extends EA_Controller {
 
             foreach ($google_events->getItems() as $google_event)
             {
-                if ($google_event->getSummary() === 'Unavailable')
-//HERE we go
-                    try {
-                {
-                    $google_event_id = $google_event->getId();
-                    $CI->google_sync->delete_appointment($provider, $google_event_id);
-                    }
-                    } 
-                    catch (Exception $exception)
-                    {
-                    log_message('debug', "Failed to delete Google Cal Event");
-                    }
+
+//HERE WE GO: TEMP CODE TO CLEAN UP GOOGLE CALENDAR of DUPLICATES
+//                if ($google_event->getSummary() === 'Unavailable')
+//                {
+//                    try 
+//                    {
+//                        $google_event_id = $google_event->getId();
+//                        $CI->google_sync->delete_appointment($provider, $google_event_id);
+//                    }
+//                    catch (Exception $exception)
+//                    {
+//                        log_message('debug', "Failed to delete Google Cal Event");
+//                    }
+//                }
                 if ($google_event->getStatus() === 'cancelled')
                 {
                     continue;

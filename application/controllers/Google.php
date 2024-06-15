@@ -117,6 +117,7 @@ class Google extends EA_Controller {
                     $google_event = $CI->google_sync->add_appointment($appointment, $provider,
                         $service, $customer, $company_settings);
                     $appointment['id_google_calendar'] = $google_event->id;
+                    log_message('debug', "The id_google_calendar added to this appoint is " . $appointment['id_google_calendar'] );
                     $CI->appointments_model->add($appointment); // Save the Google Calendar ID.
                 }
                 else
@@ -126,6 +127,7 @@ class Google extends EA_Controller {
                     {
                         $google_event = $CI->google_sync->get_event($provider, $appointment['id_google_calendar']);
 
+                        log_message('debug', "Found existing appointment id " . $appointment['id_google_calendar'] );
                         if ($google_event->status == 'cancelled')
                         {
                             throw new Exception('Event is cancelled, remove the record from Easy!Appointments.');
@@ -145,6 +147,8 @@ class Google extends EA_Controller {
                         if ($appt_start != $event_start->getTimestamp() || $appt_end != $event_end->getTimestamp()
                             || $appointment['notes'] !== $google_event->getDescription())
                         {
+                            log_message('debug', "The diff is OUR desc " . $appointment['notes']);
+
                             $is_different = TRUE;
                         }
 
@@ -153,6 +157,7 @@ class Google extends EA_Controller {
                             $appointment['start_datetime'] = $event_start->format('Y-m-d H:i:s');
                             $appointment['end_datetime'] = $event_end->format('Y-m-d H:i:s');
                             $appointment['notes'] = $google_event->getDescription();
+                            log_message('debug', "The google desc " . $appointment['notes']);
                             $CI->appointments_model->add($appointment);
                         }
 
@@ -198,6 +203,8 @@ class Google extends EA_Controller {
                 }
 
                 $results = $CI->appointments_model->get_batch(['id_google_calendar' => $google_event->getId()]);
+//Important check here to prevent duplication.
+                log_message('debug', "The results are : " . $results . " for " . $google_event);
 
                 if ( ! empty($results))
                 {

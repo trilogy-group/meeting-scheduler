@@ -204,7 +204,7 @@ class Google extends EA_Controller {
 
                 $results = $CI->appointments_model->get_batch(['id_google_calendar' => $google_event->getId()]);
 //Important check here to prevent duplication.
-                log_message('debug', "The results are : " . $results . " for " . $google_event);
+                log_message('debug', "The results are : " . $results . " for " . print_r(json_encode($google_event)));
 
                 if ( ! empty($results))
                 {

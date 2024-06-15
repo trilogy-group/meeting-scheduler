@@ -283,7 +283,7 @@ class Backend_api extends EA_Controller {
             if ($this->input->post('appointment_data'))
             {
                 $appointment = json_decode($this->input->post('appointment_data'), TRUE);
-
+                log_message('debug', 'The appointment data is ' . json_encode($appointment, JSON_PRETTY_PRINT));
                 $required_privileges = ( ! isset($appointment['id']))
                     ? $this->privileges[PRIV_APPOINTMENTS]['add']
                     : $this->privileges[PRIV_APPOINTMENTS]['edit'];

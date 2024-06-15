@@ -338,6 +338,7 @@ class Providers_model extends EA_Model {
 
         foreach ($settings as $name => $value)
         {
+            log_message('debug', "Printing the new providers setting: " . $name . ":" . $value);
             // Sort in descending order the working plan exceptions in a reverse order (makes it easier to edit them
             // later on).
             if ($name === 'working_plan_exceptions')

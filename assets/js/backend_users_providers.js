@@ -201,15 +201,15 @@
                         };
                        // Include a working plan
                         if (agentData[agent].shift === "S1") {
-                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"tuesday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"wednesday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"thursday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"friday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"saturday\":null}";
+                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"breaks\":[]},\"tuesday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"breaks\":[]},\"wednesday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"breaks\":[]},\"thursday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"breaks\":[]},\"friday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"breaks\":[]},\"saturday\":null}";
                         }
 
                         if (agentData[agent].shift === "S2") {
-                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"tuesday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"wednesday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"thursday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"friday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"saturday\":null}";
+                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"breaks\":[]},\"tuesday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"breaks\":[]},\"wednesday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"breaks\":[]},\"thursday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"breaks\":[]},\"friday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"breaks\":[]},\"saturday\":null}";
                         }
 
                         if (agentData[agent].shift === "S3") {
-                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"tuesday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"wednesday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"thursday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"friday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"saturday\":null}";
+                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"breaks\":[]},\"tuesday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"breaks\":[]},\"wednesday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"breaks\":[]},\"thursday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"breaks\":[]},\"friday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"breaks\":[]},\"saturday\":null}";
                         }
 
                         if (agentData[agent].shift === "S4") {

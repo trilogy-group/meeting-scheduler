@@ -142,28 +142,18 @@
         /**
          * Event: Sync Trilogy Providers Button "Click"
          */
-        $('#providers').on('click', '#sync-trilogy-agents', function () {
-            console.log(JSON.stringify(GlobalVariables.providers,null,2));
-        });
         let serviceIds = {};
         let serviceLookupFail = [];
-        let providerIds = {};
-        let agents = [];
-        let agentEmails = [];
+        let obsoletedAgents = [];
         let agentData = {};
         let productsData = {};
 
-        $('#providers').on('click', '#sync-trilogy-agents_TEMP_CONTROL', function () {
+        $('#providers').on('click', '#sync-trilogy-agents', function () {
 
             $('.form-check-input').each(function() {
                 var productId = $(this).attr('data-id');
                 var label = $(this).next().text().split(' - ')[1];
                 serviceIds[label] = productId;
-            });
-            $('.provider-row.entry').each(function() {
-                var providerId = $(this).attr('data-id');
-                var label = $(this).find('strong').html();
-                providerIds[label] = providerId;
             });
             // Sub function to read from file ./assets/js/trilogyfetch/output.json  
             var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_sync_trilogy_data';
@@ -174,22 +164,22 @@
                         const parsed = JSON.parse(JSON.stringify(response,null,2));
                         agentData = parsed.data.agents;
                         productsData = parsed.data.products; 
-
-                        const subList = Object.values(agentData);
                          
-                        subList.forEach( value => {
-                           const agent = value.firstName + ' ' + value.lastName;
-                           agents.push(agent);
-                        });
-                        agentEmails = Object.keys(agentData); // ["munawar.shah@trilogy.com"] ;  //
                     } 
                     catch (parseError) 
                     { 
                         console.log('Problem parsing the response from ajax_sync_trilogy_data', parseError);
                     }
+                    const agentEmails = Object.keys(agentData); // ["munawar.shah@trilogy.com"] ;  //
+
+                    GlobalVariables.providers.forEach(exsitingProvider => {
+                        if (!agentEmails.includes(existingProvider.email)) {
+                            obsoletedAgents.push(existingProvider.email)
+                        }
+                    }
 
                     agentEmails.forEach(agent => {
-                        var provider = {
+                        let provider = {
                             first_name: agentData[agent].firstName,
                             last_name: agentData[agent].lastName,
                             email: agent,
@@ -203,15 +193,29 @@
                             timezone: agentData[agent].shift,
                             settings: {
                                 username: agent.split('@')[0],
-                                working_plan: "{\"sunday\":null,\"monday\":{\"start\":\"08:00\",\"end\":\"17:00\",\"breaks\":[{\"start\":\"08:00\",\"end\":\"09:00\"}]},\"tuesday\":{\"start\":\"08:00\",\"end\":\"17:00\",\"breaks\":[{\"start\":\"08:00\",\"end\":\"09:00\"}]},\"wednesday\":{\"start\":\"08:00\",\"end\":\"17:00\",\"breaks\":[{\"start\":\"08:00\",\"end\":\"09:00\"}]},\"thursday\":{\"start\":\"08:00\",\"end\":\"17:00\",\"breaks\":[{\"start\":\"08:00\",\"end\":\"09:00\"}]},\"friday\":{\"start\":\"08:00\",\"end\":\"17:00\",\"breaks\":[{\"start\":\"08:00\",\"end\":\"09:00\"}]},\"saturday\":null}",
                                 working_plan_exceptions: JSON.stringify(BackendUsers.wp.getWorkingPlanExceptions()),
                                 notifications: true,
                                 calendar_view: "default",
                                 password: "CSMeetings2024!"
                             }
                         };
-                        
-                        var lookup = provider.first_name + ' ' + provider.last_name; 
+                       // Include a working plan
+                        if (agentData[agent].shift === "S1") {
+                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"tuesday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"wednesday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"thursday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"friday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"saturday\":null}";
+                        }
+
+                        if (agentData[agent].shift === "S2") {
+                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"tuesday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"wednesday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"thursday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"friday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"saturday\":null}";
+                        }
+
+                        if (agentData[agent].shift === "S3") {
+                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"tuesday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"wednesday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"thursday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"friday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"saturday\":null}";
+                        }
+
+                        if (agentData[agent].shift === "S3") {
+                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"00:00\",\"end\":\"24:00\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"tuesday\":{\"start\":\"00:00\",\"end\":\"24:00\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"wednesday\":{\"start\":\"00:00\",\"end\":\"24:00\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"thursday\":{\"start\":\"00:00\",\"end\":\"24:00\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"friday\":{\"start\":\"00:00\",\"end\":\"24:00\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"saturday\":null}";
+                        }
+
                         // Include provider services.
                         provider.services = []; 
                         let serviceSet = new Set();
@@ -228,15 +232,30 @@
                             serviceSet.add(serviceId);
                             provider.services = Array.from(serviceSet);
                         });
-
-                        if (providerIds[lookup] !== undefined) {
-                            provider.id = providerIds[lookup];
+                        
+                        const existingProvider = GlobalVariables.providers.find(obj => obj.email === agent);
+                        
+                        if (existingProvider) {
+                            provider.id = existingProvider.id;
                         }
-                        console.log(JSON.stringify(provider,null,2));
+
+                        if (existingProvider && !obsoletedAgents.includes(agent)) {
+                            //           RETAIN CUSTOM SETTINGS FOR EXISTING AGENTS
+                         //   console.log("Existing provider found" + provider.id);
+                          //  return
+                        }
+
+                        if (existingProvider && obsoletedAgents.includes(agent)) {
+                            //          REMOVE CERTIFICATIONS FROM AGENTS THAT HAVE LEFT
+                            provider = existingProvider;
+                            provider.services = [];
+                        }
                         instance.bulksave(provider)
 
                     });
-
+                        console.log('REMOVED certs from obsolete agents:' + JSON.stringify(obsoletedAgents,null,2));
+                        console.log('Service exists on mapping sheet but lookup failed:' + JSON.stringify(obsoletedAgents,null,2));
+                        
                 }); 
         });
 

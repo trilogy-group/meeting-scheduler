@@ -3,10 +3,10 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 class CustomDateTimeZone extends DateTimeZone {
     private static $customTimezones = [
-        'S1' => 'Asia/Jakarta', //'+07:00', 
-        'S2' => 'Africa/Algiers', //'+01:00', 
-        'S3' => 'America/Jamaica', //'-05:00', 
-        'S4' => 'Pacific/Niue', //'-11:00', 
+        'S1' => 'UTC', //'Asia/Jakarta', //'+07:00', 
+        'S2' => 'UTC', //'Africa/Algiers', //'+01:00', 
+        'S3' => 'UTC', //'America/Jamaica', //'-05:00', 
+        'S4' => 'UTC', //'Pacific/Niue', //'-11:00', 
     ];
 
     public function __construct($timezone) {

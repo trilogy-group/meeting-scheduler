@@ -282,7 +282,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="notes" class="control-label">
-                                    <?= lang('notes') ?>
+                                    Ticket #
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" id="notes" class="required form-control" maxlength="120"/>

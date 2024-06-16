@@ -199,21 +199,54 @@
                                 password: "CSMeetings2024!"
                             }
                         };
+
                        // Include a working plan
                         if (agentData[agent].shift === "S1") {
-                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"breaks\":[]},\"tuesday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"breaks\":[]},\"wednesday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"breaks\":[]},\"thursday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"breaks\":[]},\"friday\":{\"start\":\"01:00\",\"end\":\"10:00\",\"breaks\":[]},\"saturday\":null}";
+                            provider.settings.working_plan = JSON.stringify({
+                                "sunday": null,
+                                "monday": {"start": "01:00", "end": "10:00", "breaks": []},
+                                "tuesday": {"start": "01:00", "end": "10:00", "breaks": []},
+                                "wednesday": {"start": "01:00", "end": "10:00", "breaks": []},
+                                "thursday": {"start": "01:00", "end": "10:00", "breaks": []},
+                                "friday": {"start": "01:00", "end": "10:00", "breaks": []},
+                                "saturday": null
+                            });
                         }
 
                         if (agentData[agent].shift === "S2") {
-                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"breaks\":[]},\"tuesday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"breaks\":[]},\"wednesday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"breaks\":[]},\"thursday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"breaks\":[]},\"friday\":{\"start\":\"07:00\",\"end\":\"16:00\",\"breaks\":[]},\"saturday\":null}";
+                            provider.settings.working_plan = JSON.stringify({
+                                "sunday": null,
+                                "monday": {"start": "07:00", "end": "16:00", "breaks": []},
+                                "tuesday": {"start": "07:00", "end": "16:00", "breaks": []},
+                                "wednesday": {"start": "07:00", "end": "16:00", "breaks": []},
+                                "thursday": {"start": "07:00", "end": "16:00", "breaks": []},
+                                "friday": {"start": "07:00", "end": "16:00", "breaks": []},
+                                "saturday": null
+                            });
                         }
 
                         if (agentData[agent].shift === "S3") {
-                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"breaks\":[]},\"tuesday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"breaks\":[]},\"wednesday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"breaks\":[]},\"thursday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"breaks\":[]},\"friday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"breaks\":[]},\"saturday\":null}";
+                            provider.settings.working_plan = JSON.stringify({
+                                "sunday": null,
+                                "monday": {"start": "13:00", "end": "22:00", "breaks": []},
+                                "tuesday": {"start": "13:00", "end": "22:00", "breaks": []},
+                                "wednesday": {"start": "13:00", "end": "22:00", "breaks": []},
+                                "thursday": {"start": "13:00", "end": "22:00", "breaks": []},
+                                "friday": {"start": "13:00", "end": "22:00", "breaks": []},
+                                "saturday": null
+                            });
                         }
 
                         if (agentData[agent].shift === "S4") {
-                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"00:00\",\"end\":\"23:59\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"tuesday\":{\"start\":\"00:00\",\"end\":\"23:59\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"wednesday\":{\"start\":\"00:00\",\"end\":\"23:59\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"thursday\":{\"start\":\"00:00\",\"end\":\"23:59\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"friday\":{\"start\":\"00:00\",\"end\":\"23:59\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"saturday\":null}";
+                            provider.settings.working_plan = JSON.stringify({
+                                "sunday": null,
+                                "monday": {"start": "00:00", "end": "23:59", "breaks": [{"start": "04:00", "end": "19:00"}]},
+                                "tuesday": {"start": "00:00", "end": "23:59", "breaks": [{"start": "04:00", "end": "19:00"}]},
+                                "wednesday": {"start": "00:00", "end": "23:59", "breaks": [{"start": "04:00", "end": "19:00"}]},
+                                "thursday": {"start": "00:00", "end": "23:59", "breaks": [{"start": "04:00", "end": "19:00"}]},
+                                "friday": {"start": "00:00", "end": "23:59", "breaks": [{"start": "04:00", "end": "19:00"}]},
+                                "saturday": null
+                            });
                         }
 
                         // Include provider services.

@@ -1257,37 +1257,6 @@ class Backend_api extends EA_Controller {
     }
 
 
-    /**
-     * Find all provider records.
-     */
-    public function ajax_find_providers()
-    {
-        try
-        {
-            if ($this->privileges[PRIV_USERS]['view'] == FALSE)
-            {
-                throw new Exception('You do not have the required privileges for this task.');
-            }
-
-            $key = '';
-//HERE WE GO
-            $response = $this->providers_model->get_batch($key);
-        }
-        catch (Exception $exception)
-        {
-            $this->output->set_status_header(500);
-
-            $response = [
-                'message' => $exception->getMessage(),
-                'trace' => config('debug') ? $exception->getTrace() : []
-            ];
-        }
-
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($response));
-    }
-
 
 
     /**

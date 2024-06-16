@@ -338,7 +338,6 @@ class Providers_model extends EA_Model {
 
         foreach ($settings as $name => $value)
         {
-            log_message('debug', "Printing the new providers setting: " . $name . ":" . $value);
             // Sort in descending order the working plan exceptions in a reverse order (makes it easier to edit them
             // later on).
             if ($name === 'working_plan_exceptions')
@@ -565,7 +564,6 @@ class Providers_model extends EA_Model {
             $provider['settings'] = $this->db->get_where('user_settings', ['id_users' => $provider['id']])->row_array();
             unset($provider['settings']['id_users']);
         }
-        log_message('debug', "The batch is: " . json_encode($batch, JSON_PRETTY_PRINT));
         // Return provider records in an array.
         return $batch;
     }

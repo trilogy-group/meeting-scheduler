@@ -142,6 +142,9 @@
         /**
          * Event: Sync Trilogy Providers Button "Click"
          */
+        $('#providers').on('click', '#sync-trilogy-agents', function () {
+            console.log(JSON.Stringify(GlobalVariables.providers,null,2));
+        });
         let serviceIds = {};
         let serviceLookupFail = [];
         let providerIds = {};
@@ -150,7 +153,7 @@
         let agentData = {};
         let productsData = {};
 
-        $('#providers').on('click', '#sync-trilogy-agents', function () {
+        $('#providers').on('click', '#sync-trilogy-agents_TEMP_CONTROL', function () {
 
             $('.form-check-input').each(function() {
                 var productId = $(this).attr('data-id');

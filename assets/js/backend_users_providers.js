@@ -143,7 +143,7 @@
          * Event: Sync Trilogy Providers Button "Click"
          */
         $('#providers').on('click', '#sync-trilogy-agents', function () {
-            console.log(JSON.Stringify(GlobalVariables.providers,null,2));
+            console.log(JSON.stringify(GlobalVariables.providers,null,2));
         });
         let serviceIds = {};
         let serviceLookupFail = [];

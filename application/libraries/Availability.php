@@ -143,17 +143,12 @@ class Availability {
             // Round down to the nearest half-hour
             if ($downflag) {
                 if ($minutes < 30) {$minutes = 0;} 
-                else if ($minutes > 58) {$minutes = 0; $hour += 1;}
                 else {$minutes = 30;}
             } else {
             // Round up to the nearest half-hour
                 if ($minutes < 30 && $minutes > 0) {$minutes = 30;} 
                 else if ($minutes === 0) {}
                 else {$minutes = 0; $hour += 1;}
-            }
-            if ($hour === 24) {
-                $hour = 0;
-                $time->modify('+1 day');
             }
             $roundedTime = (clone $time)->setTime($hour, $minutes);
             return $roundedTime;

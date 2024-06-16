@@ -105,7 +105,7 @@ class Ics_file {
             lang('city') . ': ' . $customer['city'],
             lang('zip_code') . ': ' . $customer['zip_code'],
             '',
-            lang('notes'),
+            'Ticket #',
             '',
             $appointment['notes'],
         ];

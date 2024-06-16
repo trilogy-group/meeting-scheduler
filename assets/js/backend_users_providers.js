@@ -212,8 +212,8 @@
                             provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"tuesday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"wednesday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"thursday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"friday\":{\"start\":\"13:00\",\"end\":\"22:00\",\"saturday\":null}";
                         }
 
-                        if (agentData[agent].shift === "S3") {
-                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"00:00\",\"end\":\"24:00\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"tuesday\":{\"start\":\"00:00\",\"end\":\"24:00\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"wednesday\":{\"start\":\"00:00\",\"end\":\"24:00\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"thursday\":{\"start\":\"00:00\",\"end\":\"24:00\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"friday\":{\"start\":\"00:00\",\"end\":\"24:00\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"saturday\":null}";
+                        if (agentData[agent].shift === "S4") {
+                            provider.settings.working_plan = "{\"sunday\":null,\"monday\":{\"start\":\"00:00\",\"end\":\"23:59\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"tuesday\":{\"start\":\"00:00\",\"end\":\"23:59\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"wednesday\":{\"start\":\"00:00\",\"end\":\"23:59\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"thursday\":{\"start\":\"00:00\",\"end\":\"23:59\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"friday\":{\"start\":\"00:00\",\"end\":\"23:59\",\"breaks\":[{\"start\":\"04:00\",\"end\":\"19:00\"}]},\"saturday\":null}";
                         }
 
                         // Include provider services.

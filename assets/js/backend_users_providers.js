@@ -176,7 +176,7 @@
                         if (!agentEmails.includes(existingProvider.email)) {
                             obsoletedAgents.push(existingProvider.email)
                         }
-                    }
+                    });
 
                     agentEmails.forEach(agent => {
                         let provider = {

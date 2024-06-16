@@ -565,7 +565,7 @@ class Providers_model extends EA_Model {
             $provider['settings'] = $this->db->get_where('user_settings', ['id_users' => $provider['id']])->row_array();
             unset($provider['settings']['id_users']);
         }
-
+        log_message('debug', "The batch is: " . json_encode($batch, JSON_PRETTY_PRINT));
         // Return provider records in an array.
         return $batch;
     }

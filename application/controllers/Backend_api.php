@@ -1256,6 +1256,77 @@ class Backend_api extends EA_Controller {
             ->set_output(json_encode($response));
     }
 
+
+    /**
+     * Find all provider records.
+     */
+    public function ajax_find_providers()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_USERS]['view'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $key = '';
+//HERE WE GO
+            $response = $this->providers_model->get_batch($key);
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+
+    /**
+     * Filter provider records with string key.
+     */
+    public function ajax_filter_providers()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_USERS]['view'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $key = $this->db->escape_str($this->input->post('key'));
+
+            $where =
+                '(first_name LIKE "%' . $key . '%" OR last_name LIKE "%' . $key . '%" ' .
+                'OR email LIKE "%' . $key . '%" OR mobile_number LIKE "%' . $key . '%" ' .
+                'OR phone_number LIKE "%' . $key . '%" OR address LIKE "%' . $key . '%" ' .
+                'OR city LIKE "%' . $key . '%" OR state LIKE "%' . $key . '%" ' .
+                'OR zip_code LIKE "%' . $key . '%" OR notes LIKE "%' . $key . '%")';
+
+            $response = $this->providers_model->get_batch($where);
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
     /**
      * Filter provider records with string key.
      */

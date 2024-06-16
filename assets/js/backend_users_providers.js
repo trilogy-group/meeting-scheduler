@@ -172,7 +172,7 @@
                     }
                     const agentEmails = Object.keys(agentData); // ["munawar.shah@trilogy.com"] ;  //
 
-                    GlobalVariables.providers.forEach(exsitingProvider => {
+                    GlobalVariables.providers.forEach(existingProvider => {
                         if (!agentEmails.includes(existingProvider.email)) {
                             obsoletedAgents.push(existingProvider.email)
                         }

@@ -142,18 +142,12 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                     providerSlotsMap[providerId] = {}; //initialize empty to carry the realHours data
 
                     
-                    //CUSTOM: Mapping that will make 08:00AM to 5:00PM working hours set align with UTC shift on same day (in UTC time) 
-                    //To test: https://savvytime.com/converter/utc and move timer to UTC shift start time, then add the 'city' corresponding to offset, and observe it is 08:00am.
-                    // S1 : 0100 - 1000 hrs UTC
-                    // S2 : 0700 - 1600 hrs UTC
-                    // S3 : 1300 - 2200 hrs UTC
-                    // S4 : 1900 - 0400 hrs(next day) UTC
-
+                    //CUSTOM: Mapping is fully on UTC time hours that correspond to shift times in UTC becuase the working_plans are explicitly defined with the correct hours.
                     const tzMapping = {
-                        'S1':'+07:00', //City: Jakarta, Indonesia - UTC+07:00
-                        'S2':'+01:00', //City: Algiers, Algeria - UTC+01:00
-                        'S3':'-05:00', //City: Kingston, Jamaica - UTC-05:00
-                        'S4':'-11:00', //City: Alofi, Niue - UTC-11:00
+                        'S1':'+00:00', //Obsolete City: Jakarta, Indonesia - UTC+07:00
+                        'S2':'+00:00', //Obsolete City: Algiers, Algeria - UTC+01:00
+                        'S3':'+00:00', //Obsolete City: Kingston, Jamaica - UTC-05:00
+                        'S4':'+00:00', //Obsolete City: Alofi, Niue - UTC-11:00
                     };
                     // Iterate over the hours which are of format 2024-05-14: [10:00,10:30...] 
                     // Extract and conver the hours to timezone of customer viewing this booking page

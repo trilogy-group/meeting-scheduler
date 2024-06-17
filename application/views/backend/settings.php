@@ -497,7 +497,7 @@
 
         <!-- ABOUT TAB -->
 
-        <div class="tab-pane" id="about-app">
+        <!--div class="tab-pane" id="about-app">
             <h3>Easy!Appointments</h3>
 
             <p>
@@ -545,7 +545,7 @@
                 <?= lang('about_app_license') ?>
                 <a href="http://www.gnu.org/copyleft/gpl.html">http://www.gnu.org/copyleft/gpl.html</a>
             </p>
-        </div>
+        </div-->
 
     </div>
 </div>

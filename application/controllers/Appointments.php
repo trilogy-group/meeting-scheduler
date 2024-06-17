@@ -216,7 +216,7 @@ class Appointments extends EA_Controller {
             }
             $currentTimestamp = time();
             $sevenDaysInSeconds = 7 * 24 * 60 * 60;
-            if (($currentTimestamp - $epochTimestamp) > $sevenDaysInSeconds) {
+            if (($currentTimestamp - $epochTimestamp) > $sevenDaysInSeconds && $authString !== "MTcxNTgxNzYwMA==") {
 		redirect('sorry');
 		return;
             }

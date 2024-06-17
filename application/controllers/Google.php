@@ -196,11 +196,15 @@ class Google extends EA_Controller {
                     continue;
                 }
 
-                if ($google_event->getStart() === NULL || $google_event->getEnd() === NULL)
+                if ($google_event->getTransparency() === 'transparent')
                 {
                     continue;
                 }
 
+                if ($google_event->getStart() === NULL || $google_event->getEnd() === NULL)
+                {
+                    continue;
+                }
                 if ($google_event->getStart()->getDateTime() === $google_event->getEnd()->getDateTime())
                 {
                     $event_start = new DateTime($google_event->getStart()->getDate());

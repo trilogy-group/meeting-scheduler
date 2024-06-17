@@ -273,21 +273,24 @@
                         }
 
                         if (existingProvider && !obsoletedAgents.includes(agent)) {
-                            //           RETAIN CUSTOM SETTINGS FOR EXISTING AGENTS
-                         //   console.log("Existing provider found" + provider.id);
+                    //RETAIN CUSTOM SETTINGS FOR EXISTING AGENTS
+                          //  console.log("Existing provider found" + provider.id);
                           //  return
                         }
 
-                        if (existingProvider && obsoletedAgents.includes(agent)) {
-                            //          REMOVE CERTIFICATIONS FROM AGENTS THAT HAVE LEFT
-                            provider = existingProvider;
-                            provider.services = [];
-                        }
-                        instance.bulksave(provider)
+                        instance.bulksave(provider);
 
                     });
+
+                    obsoletedAgents.forEach(agent => {
+                        const existingProvider = GlobalVariables.providers.find(obj => obj.email === agent);
+                    // REMOVE CERTIFICATIONS FROM AGENTS THAT HAVE LEFT
+                        provider = existingProvider;
+                        provider.services = [];
+                        instance.bulksave(provider);
+                        });
                         console.log('REMOVED certs from obsolete agents:' + JSON.stringify(obsoletedAgents,null,2));
-                        console.log('Service exists on mapping sheet but lookup failed:' + JSON.stringify(obsoletedAgents,null,2));
+                        console.log('Service exists on mapping sheet but lookup failed:' + JSON.stringify(serviceLookupFail,null,2));
                         
                 }); 
         });

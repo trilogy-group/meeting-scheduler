@@ -274,8 +274,8 @@
 
                         if (existingProvider && !obsoletedAgents.includes(agent)) {
                     //RETAIN CUSTOM SETTINGS FOR EXISTING AGENTS
-                          //  console.log("Existing provider found" + provider.id);
-                          //  return
+                            console.log("Existing provider found - not overwriting" + provider.id + provider.email);
+                            return
                         }
 
                         instance.bulksave(provider);

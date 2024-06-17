@@ -611,10 +611,10 @@ class Availability {
     {
 
         $timezones = [
-            'S1' => 'Asia/Jakarta',  // Jakarta (+7:00)
-            'S2' => 'Africa/Algiers', // Algiers (+1:00)
-            'S3' => 'America/Jamaica', // Jamaica (-5:00)
-            'S4' => 'Pacific/Niue', // Niue (−11:00)
+            'S1' => 'UTC',//'Asia/Jakarta',  // Jakarta (+7:00)
+            'S2' => 'UTC',//'Africa/Algiers', // Algiers (+1:00)
+            'S3' => 'UTC', //'America/Jamaica', // Jamaica (-5:00)
+            'S4' => 'UTC', //'Pacific/Niue', // Niue (−11:00)
         ];
         
         $custom_timezone =  $provider['timezone'];

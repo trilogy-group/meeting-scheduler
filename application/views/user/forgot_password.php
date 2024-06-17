@@ -59,12 +59,12 @@
             <?= lang('go_to_login') ?></a>
     </form>
 
-    <div class="mt-4">
+    <!--div class="mt-4">
         <small>
             Powered by
             <a href="https://easyappointments.org">Easy!Appointments</a>
         </small>
-    </div>
+    </div-->
 </div>
 <script src="<?= asset_url('assets/ext/fontawesome/js/fontawesome.min.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/fontawesome/js/solid.min.js') ?>"></script>

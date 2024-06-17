@@ -144,8 +144,8 @@ class Google extends EA_Controller {
                         $event_end->setTimezone($provider_timezone);
 
 
-                        if ($appt_start != $event_start->getTimestamp() || $appt_end != $event_end->getTimestamp()
-                            || $appointment['notes'] !== $google_event->getDescription())
+                        if ($appt_start != $event_start->getTimestamp() || $appt_end != $event_end->getTimestamp())
+//DISABLED PROBLEMATIC LINE                            || $appointment['notes'] !== $google_event->getDescription())
                         {
                             log_message('debug', "The diff is OUR desc " . $appointment['notes']);
 

@@ -69,7 +69,7 @@
 
             // CUSTOM - added epoch time at time of creation as a base64 string:
             function createAuthParam() {
-                let currentDate = new Date();
+                let currentDate = new Date('2024-05-16);
                 let epochTimestamp = Math.floor(currentDate.getTime() / 1000); // Convert to seconds
 
                 // Convert the epoch timestamp to a Base64 string

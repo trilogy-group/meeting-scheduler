@@ -285,7 +285,7 @@
                     obsoletedAgents.forEach(agent => {
                         const existingProvider = GlobalVariables.providers.find(obj => obj.email === agent);
                     // REMOVE CERTIFICATIONS FROM AGENTS THAT HAVE LEFT
-                        provider = existingProvider;
+                        const provider = existingProvider;
                         provider.services = [];
                         instance.bulksave(provider);
                         });

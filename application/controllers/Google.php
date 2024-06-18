@@ -207,6 +207,12 @@ class Google extends EA_Controller {
                 {
                     continue;
                 }
+
+                if ($google_event->getAttendees())
+                {
+                   $attendees =  $google_event->getAttendees();
+                   log_message('debug', "RESULTS OF ATTENDEES LOOKUP ARE: " . json_encode($attendees, JSON_PRETTY_PRINT));
+                }
                 if ($google_event->getStart()->getDateTime() === $google_event->getEnd()->getDateTime())
                 {
                     $event_start = new DateTime($google_event->getStart()->getDate());
@@ -225,11 +231,17 @@ class Google extends EA_Controller {
                 $results = $CI->appointments_model->get_batch(['id_google_calendar' => $google_event->getId()]);
 //Important check here to prevent duplication.
                 //log_message('debug', "The results are : " . json_encode($results) . " for " . json_encode($google_event));
-
-                if ( ! empty($results)) //NEED TO RE-ADD FOR MORE ATTENDEES
+               // log_message('debug', "RESULTS OF APPT DB LOOKUP ARE: " . json_encode($results, JSON_PRETTY_PRINT));
+                if ( ! empty($results) ) //NEED TO RE-ADD IF THERE HAVE BEEN MORE ATTENDEES
                 {
-                    log_message('debug', "RESULTS OF APPT DB LOOKUP ARE: " . encode($results, JSON_PRETTY_PRINT));
-                    continue;
+                    foreach($results as $result)
+                    {
+                        if (results["id_users_provider"] === $provider['id'])
+                        {
+                            continue;
+                        }
+                    }
+
                 }
 
                 // Record doesn't exist in the Easy!Appointments, so add the event now.

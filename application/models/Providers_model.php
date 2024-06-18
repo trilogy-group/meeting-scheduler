@@ -613,6 +613,53 @@ class Providers_model extends EA_Model {
     }
 
     /**
+     * Get the available system providers.
+     *
+     * This method returns the available providers and the services that can provide.
+     *
+     * @return array Returns an array with the providers data.
+     */
+    public function get_available_providers_mod()
+    {
+        // Get provider records from database.
+        $this->db
+            ->select('users.*')
+            ->from('users')
+            ->join('roles', 'roles.id = users.id_roles', 'inner')
+            ->join('user_settings', 'user_settings.id_users = users.id', 'inner')
+            ->where('roles.slug', DB_SLUG_PROVIDER)
+// CUSTOM : Disabled offering of calendars of people who don't have Google Calendar synced.
+            ->where('user_settings.google_sync IS NOT NULL')
+            ->order_by('first_name ASC, last_name ASC, email ASC');
+
+        $providers = $this->db->get()->result_array();
+
+        // Include each provider services and settings.
+        foreach ($providers as &$provider)
+        {
+            // Services
+            $services = $this->db->get_where('services_providers', ['id_users' => $provider['id']])->result_array();
+
+            $provider['services'] = [];
+            foreach ($services as $service)
+            {
+                $provider['services'][] = $service['id_services'];
+            }
+
+            // Settings
+            $provider['settings'] = $this->db->get_where('user_settings', ['id_users' => $provider['id']])->row_array();
+            unset(
+                $provider['settings']['username'],
+                $provider['settings']['password'],
+                $provider['settings']['salt']
+            );
+        }
+
+        // Return provider records.
+        return $providers;
+    }
+
+    /**
      * Save the provider working plan exception.
      *
      * @param string $date The working plan exception date (in YYYY-MM-DD format).

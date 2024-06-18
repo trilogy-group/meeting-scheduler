@@ -176,10 +176,10 @@ class Google extends EA_Controller {
             $google_calendar = $provider['settings']['google_calendar'];
             $google_events = $CI->google_sync->get_sync_events($google_calendar, $start, $end);
 
+//MAIN            log_message('debug', json_encode($google_events, JSON_PRETTY_PRINT));
             foreach ($google_events->getItems() as $google_event)
             {
 
-                log_message('debug', json_encode($google_events, JSON_PRETTY_PRINT));
 //HERE WE GO: TEMP CODE TO CLEAN UP GOOGLE CALENDAR of DUPLICATES
 //                if ($google_event->getSummary() === 'Unavailable')
 //                {
@@ -226,8 +226,9 @@ class Google extends EA_Controller {
 //Important check here to prevent duplication.
                 //log_message('debug', "The results are : " . json_encode($results) . " for " . json_encode($google_event));
 
-                if ( ! empty($results))
+                if ( ! empty($results)) //NEED TO RE-ADD FOR MORE ATTENDEES
                 {
+                    log_message('debug', "RESULTS OF APPT DB LOOKUP ARE: " . encode($results, JSON_PRETTY_PRINT));
                     continue;
                 }
 

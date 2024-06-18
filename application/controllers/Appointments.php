@@ -506,7 +506,7 @@ class Appointments extends EA_Controller {
         $today = $today_obj->format('Y-m-d');
         $tomorrow = $tomorrow_obj->format('Y-m-d');
 
-        $available_providers = $this->providers_model->get_available_providers();
+        $available_providers = $this->providers_model->get_available_providers_mod(); //useing custom method that only returns providers with google sync
         $service = $this->services_model->get_row($service_id);
         
 

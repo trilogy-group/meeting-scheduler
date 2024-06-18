@@ -147,18 +147,19 @@ class Google extends EA_Controller {
                         if ($appt_start != $event_start->getTimestamp() || $appt_end != $event_end->getTimestamp())
 //DISABLED PROBLEMATIC LINE                            || $appointment['notes'] !== $google_event->getDescription())
                         {
-                            log_message('debug', "The diff is OUR desc " . $appointment['notes']);
+                            log_message('debug', "The diff is OUR desc " . $appointment['notes'] .
+                                " VS Google Cal" . $google_event->getDescription()
+                            );
 
                             $is_different = TRUE;
                         }
 
                         if ($is_different)
                         {
-                            $appointment['start_datetime'] = $event_start->format('Y-m-d H:i:s');
-                            $appointment['end_datetime'] = $event_end->format('Y-m-d H:i:s');
-                            $appointment['notes'] = $google_event->getDescription();
-                            log_message('debug', "The google desc " . $appointment['notes']);
-                            $CI->appointments_model->add($appointment);
+//                            $appointment['start_datetime'] = $event_start->format('Y-m-d H:i:s');
+//                            $appointment['end_datetime'] = $event_end->format('Y-m-d H:i:s');
+//                            $appointment['notes'] = $google_event->getDescription();
+//                            $CI->appointments_model->add($appointment);
                         }
 
                     }
@@ -178,6 +179,7 @@ class Google extends EA_Controller {
             foreach ($google_events->getItems() as $google_event)
             {
 
+                log_message('debug', json_encode($google_events, JSON_PRETTY_PRINT));
 //HERE WE GO: TEMP CODE TO CLEAN UP GOOGLE CALENDAR of DUPLICATES
 //                if ($google_event->getSummary() === 'Unavailable')
 //                {

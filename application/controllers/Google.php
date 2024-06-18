@@ -210,7 +210,7 @@ class Google extends EA_Controller {
 
                 $attendees =  $google_event->getAttendees();
 //                log_message('debug', "RESULTS OF ATTENDEES LOOKUP ARE: " . json_encode($attendees, JSON_PRETTY_PRINT));
-                if ($attendees[0]["self"] === true && $attendees[0]["responseStatus"] === "declined")
+                if ( !empty($attendees) && $attendees[0]["self"] === true && $attendees[0]["responseStatus"] === "declined")
                 {
                     continue;
                 }
@@ -236,13 +236,19 @@ class Google extends EA_Controller {
                // log_message('debug', "RESULTS OF APPT DB LOOKUP ARE: " . json_encode($results, JSON_PRETTY_PRINT));
                 if ( ! empty($results) ) //NEED TO RE-ADD IF THERE HAVE BEEN MORE ATTENDEES
                 {
+                    $killFlag = false;
                     foreach($results as $result)
                     {
-                        log_message('debug', "PRINTING RESULT: " . json_encode($result, JSON_PRETTY_PRINT) . " AND PROVIDER: " .  json_encode($provider, JSON_PRETTY_PRINT));
                         if ($result["id_users_provider"] === $provider['id'])
                         {
-                            continue;
+                            $killFlag = true;
+                            break;
                         }
+                    }
+
+                    if ($killFlag) 
+                    {
+                        continue;
                     }
 
                 }

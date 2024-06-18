@@ -69,11 +69,11 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         $.post(url, data)
             .done(function (response) {
                 let collectedProviders = []; //Providers of that service will be collected here.
+                let tempProviderCollection = [];
                 // The response contains the available hours for all providers and
                 // service. Fill the available hours div with response data.
                 if (Object.keys(response).length > 0) {
                     var providerId = $('#select-provider').val(); 
-                    let tempProviderCollection = [];
                     if (providerId === 'any-provider') {
                         for (var availableProvider of GlobalVariables.availableProviders) {
                             if (availableProvider.services.indexOf(serviceId) !== -1) {
@@ -83,7 +83,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                     }
                     collectedProviders = tempProviderCollection;
                 }
-                
+              	console.log(JSON.stringify(response, null,2)); 
                 // console.log("Printing available providers", JSON.stringify(collectedProviders, null,2));
                         // [
                         //  {
@@ -130,9 +130,21 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                     //}
                 
                 //To collect REAL HOUR (in provider timezone) mapped to the HOUR/SLOT in the customer's timezone. Used to append value to #available-hours for booking appointment
+		const responseProviderIds = Object.keys(response);
+//		    console.log("The response providers" + JSON.stringify(responseProviderIds,null,2));
+		const idsToRemove = []; //List of ids that didn't come back in response because Provider has no Google Sync
                 const providerSlotsMap = {}; 
                 let hourSet = new Set();
                 let hourList = [];
+                for (const provider of tempProviderCollection) {
+			if (!responseProviderIds.includes(provider.id)) {
+				idsToRemove.push(provider.id);
+//				console.log("pushing out " + provider.id);
+			}
+		};
+	        collectedProviders = collectedProviders.filter(item => !idsToRemove.includes(item.id));
+//	        console.log(JSON.stringify(collectedProviders,null,2));
+
                 for (const provider of collectedProviders) {
                     providerId = provider.id; 
                     var providerName = provider.first_name + ' ' + provider.last_name;
@@ -152,7 +164,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                     // Iterate over the hours which are of format 2024-05-14: [10:00,10:30...] 
                     // Extract and conver the hours to timezone of customer viewing this booking page
                     Object.entries(response[providerId]).forEach(([thisDate, hours]) => {
-                        //console.log("Using the provider :", providerId);
+                        console.log("Using the provider :", providerId);
                         //console.log(JSON.stringify(hours, null, 2));
                         hours.forEach(function (availableHour) {
                             const realHour = thisDate + ' ' + availableHour + ':00';
@@ -176,9 +188,10 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                             hourSet.add(hourMoment);
                         });
                     });
-                     
-                            //From the set create a list of sorted hours
-                            hourList = Array.from(hourSet).sort((a,b) => moment(a, timeFormat).valueOf() - moment(b,timeFormat).valueOf());
+
+	     
+		    //From the set create a list of sorted hours
+		    	hourList = Array.from(hourSet).sort((a,b) => moment(a, timeFormat).valueOf() - moment(b,timeFormat).valueOf());
                 }
                 //console.log(hourList);
                 function getRandomItem(listing) {

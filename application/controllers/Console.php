@@ -220,6 +220,10 @@ class Console extends EA_Controller {
         }
     }
 
+    public function funny()
+    {
+        echo "This is a test message from the console.\n"; 
+    }
 
     /**
      * Show help information about the console capabilities.
